@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devin — AI Agent Architect</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --abyss:#08080a; --carbon:#111113; --surface:#161618; --light:#f5f0eb;
+  --border-subtle:rgba(255,255,255,0.06);
+  --amber:#c96442; --amber-glow:rgba(201,100,66,0.12);
+  --green:#00d992; --green-glow:rgba(0,217,146,0.1);
+  --purple:#a78bfa; --purple-glow:rgba(167,139,250,0.12);
+  --blue:#64c8ff; --blue-glow:rgba(100,200,255,0.1);
+  --text:#f0eee8; --text2:#8b8882; --text3:#5e5c58; --white:#faf9f6;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --r-sm:4px; --r-md:8px; --r-lg:12px; --r-xl:20px;
+}
+body.light{--abyss:#f5f0eb;--carbon:#faf8f5;--surface:#f0ebe4;--text:#1a1a1a;--text2:#555;--text3:#999;--white:#1a1a1a;--border-subtle:rgba(0,0,0,0.08);--amber:#b85a3a;--amber-glow:rgba(184,90,58,0.08);--green:#008f5f;--green-glow:rgba(0,143,95,0.08);--purple:#7c5ce0;--purple-glow:rgba(124,92,224,0.08);--blue:#3a8fd4;--blue-glow:rgba(58,143,212,0.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px;scrollbar-width:thin;scrollbar-color:#2a2826 var(--abyss)}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--sb-track,var(--abyss))}::-webkit-scrollbar-thumb{background:var(--sb-thumb,#2a2826);border-radius:3px}html{transition:scrollbar-color .4s}body.light html,
+body{font-family:var(--sans);background:var(--abyss);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .4s,color .4s}
+h1,h2,h3{transition:color .6s;font-family:var(--serif);font-weight:400}
+h1{font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.08;letter-spacing:-0.02em;color:var(--white)}
+h2{font-size:clamp(1.6rem,3vw,2.25rem);line-height:1.15;letter-spacing:-0.012em;color:var(--white)}
+h3{font-size:1.2rem;line-height:1.3;color:var(--text)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+section{padding:5rem 0;position:relative;transition:background-color .6s}#journey,#skills{background:var(--carbon)}#hero,#about,#projects,#connect{background:var(--abyss)}
+.section-label{transition:color .6s;font-family:var(--mono);font-size:0.7rem;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--amber);margin-bottom:0.6rem}
+.section-header{text-align:center;margin-bottom:3.5rem}
+.section-header h2{margin-bottom:0.6rem}
+.section-header p{transition:color .6s;color:var(--text2);font-size:0.95rem;max-width:500px;margin:0 auto}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,10,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border-subtle)}body.light nav{background:rgba(250,248,245,0.94);border-bottom:1px solid rgba(0,0,0,0.08)}
+.nav-inner{max-width:1140px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;height:3.5rem}
+.nav-brand{font-family:var(--mono);font-size:0.8rem;color:var(--text2);text-decoration:none;letter-spacing:0.02em;white-space:nowrap}
+.nav-brand .prompt{color:var(--green)}.nav-brand .dollar{color:var(--purple)}
+.nav-links{display:flex;gap:1.4rem;list-style:none;margin-left:auto;margin-right:1.5rem}
+.nav-links a{font-size:0.76rem;font-weight:500;color:var(--text2);text-decoration:none;letter-spacing:0.03em;padding:0.3rem 0.55rem;border-radius:var(--r-sm);transition:all .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--green);background:var(--green-glow)}
+.lang-btn{font-family:var(--mono);font-size:0.68rem;font-weight:500;color:var(--text);background:var(--carbon);border:1px solid var(--border-subtle);border-radius:var(--r-sm);padding:0.3rem 0.65rem;cursor:pointer;transition:all .2s}
+.lang-btn span{transition:color .2s}.lang-btn span.lang-active{color:var(--green)}
+
+.hero{padding:8rem 0 4rem;min-height:100vh;display:flex;align-items:center}
+.hero-grid{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto;padding:0 2rem}
+.hero-avatar{flex-shrink:0}
+.avatar-frame{width:240px;height:240px;border-radius:24px;overflow:hidden;border:2px solid #2a2826;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.avatar-frame img{width:100%;height:100%;object-fit:cover;display:none}
+.avatar-frame img.loaded{display:block}
+.avatar-ph{font-family:var(--serif);font-size:4.5rem;color:var(--text3)}
+.hero-text{flex:1;min-width:0}
+.hero-text h1{margin-bottom:0.5rem}
+.typewriter-wrap{height:2rem;margin-bottom:1.25rem}
+.typewriter{font-family:var(--mono);font-size:0.85rem;color:var(--green);letter-spacing:0.02em}
+.typewriter .cursor,.hero-intro .cursor{display:inline-block;width:0.1em;height:1.1em;background:var(--green);vertical-align:text-bottom;animation:cb 1s step-end infinite;box-shadow:0 0 8px var(--green)}
+@keyframes cb{0%,100%{opacity:1}50%{opacity:0}}
+.hero-intro{font-size:0.95rem;color:var(--text2);line-height:1.65;margin-bottom:1.5rem;max-width:520px}
+.tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.8rem}
+.tag{padding:0.3rem 0.7rem;background:var(--amber-glow);color:var(--amber);border:1px solid rgba(201,100,66,0.18);border-radius:9999px;font-family:var(--mono);font-size:0.68rem;font-weight:500}
+body.light .tag{background:rgba(184,90,58,0.08)}body.light footer p{color:var(--text2)}body.light .tag.green{background:rgba(0,143,95,0.08)}body.light .tag.purple{background:rgba(124,92,224,0.08)}.tag.green{background:var(--green-glow);color:var(--green);border-color:rgba(0,217,146,0.18)}
+.tag.purple{background:var(--purple-glow);color:var(--purple);border-color:rgba(167,139,250,0.18)}
+body.light .hero-cta{background:rgba(0,143,95,0.1);color:var(--green);border-color:rgba(0,143,95,0.25)}.hero-cta{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;background:var(--green-glow);color:var(--green);border:1px solid rgba(0,217,146,0.3);border-radius:var(--r-sm);font-family:var(--mono);font-size:0.78rem;font-weight:500;cursor:pointer;text-decoration:none;transition:all .25s}
+.hero-cta:hover{background:rgba(0,217,146,0.16);border-color:var(--green);box-shadow:0 0 24px rgba(0,217,146,0.12)}
+
+.about-block{margin-bottom:2.5rem}
+.about-block h3{color:var(--amber);font-size:0.75rem;font-family:var(--mono);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem}
+.about-block p{color:var(--text2);font-size:0.95rem;line-height:1.8}
+
+.timeline{max-width:650px;margin:0 auto;position:relative}
+.timeline::before{content:'';position:absolute;left:150px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--green),var(--purple),var(--amber),var(--border-subtle))}
+.tl-item{display:flex;align-items:center;gap:60px;margin-bottom:2rem;cursor:pointer;position:relative}
+.tl-item::before{content:'';position:absolute;left:146px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;z-index:1}
+.tl-item.project::before{background:var(--green);box-shadow:0 0 8px var(--green)}
+.tl-item.work::before{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.tl-item.edu::before{background:var(--purple);box-shadow:0 0 8px var(--purple)}
+.tl-item.startup::before{background:#ffb450;box-shadow:0 0 8px #ffb450}
+.tl-item.intern::before{background:var(--blue);box-shadow:0 0 8px var(--blue)}
+.tl-date{width:120px;text-align:right;flex-shrink:0;font-family:var(--mono);font-size:1.1rem;line-height:1.3;font-weight:500}
+.tl-item.project .tl-date{color:var(--green)}
+.tl-item.work .tl-date{color:var(--amber)}
+.tl-item.edu .tl-date{color:var(--purple)}
+.tl-item.intern .tl-date{color:var(--blue)}
+.tl-item.startup .tl-date{color:var(--green)}
+body.light .tl-card{transition:background-color .4s,border-color .4s;background:var(--surface);border-color:var(--border-subtle)}.tl-card{transition:background-color .4s,border-color .4s;flex:1;background:var(--carbon);border:1px solid var(--border-subtle);border-radius:var(--r-md);padding:1.15rem 1.25rem;transition:all .25s}
+.tl-item.project .tl-card:hover{border-color:var(--green);box-shadow:0 0 20px rgba(0,217,146,0.06)}
+.tl-item.work .tl-card:hover{border-color:var(--amber);box-shadow:0 0 20px rgba(201,100,66,0.06)}
+.tl-item.edu .tl-card:hover{border-color:var(--blue);box-shadow:0 0 20px rgba(100,200,255,0.06)}
+.tl-item.intern .tl-card:hover{border-color:var(--blue);box-shadow:0 0 20px rgba(100,200,255,0.06)}
+.tl-item.startup .tl-card:hover{border-color:#ffb450;box-shadow:0 0 20px rgba(255,180,80,0.06)}
+.tl-title-row{display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.25rem}
+.tl-title{font-family:var(--serif);font-size:1rem;color:var(--white)}
+.tl-tag{font-family:var(--mono);font-size:0.6rem;font-weight:500;letter-spacing:0.06em;padding:0.15rem 0.45rem;border-radius:9999px}
+.tl-tag.project{background:var(--green-glow);color:var(--green)}
+.tl-tag.work{background:var(--amber-glow);color:var(--amber)}
+.tl-tag.edu{background:var(--purple-glow);color:var(--purple)}
+.tl-tag.startup{background:rgba(255,180,80,0.12);color:#ffb450}
+.tl-tag.intern{background:var(--blue-glow);color:var(--blue)}
+.tl-sub{font-size:0.75rem;color:var(--text2);margin-bottom:0.3rem}
+.tl-desc{font-size:0.75rem;color:var(--text3);line-height:1.5}
+
+#projects{overflow:visible}
+.proj-stage{height:100vh;overflow:hidden;display:flex;align-items:center}body.light .proj-stage{background:transparent}
+.proj-track{display:flex;height:100%;align-items:center;padding-left:14vw;will-change:transform}
+.proj-label{display:flex;flex-direction:column;align-items:center;font-family:var(--mono);font-size:1.8rem;font-weight:500;color:var(--amber);letter-spacing:0.04em;margin-right:3vw;white-space:nowrap;flex-shrink:0}
+.proj-demo{display:block;font-family:var(--mono);font-size:1.8rem;font-weight:500;color:var(--amber);white-space:nowrap}
+body.light .proj-card{transition:background-color .4s,border-color .4s;background:var(--surface)}.proj-card{transition:background-color .4s,border-color .4s;flex:0 0 70vw;max-width:900px;height:72vh;background:var(--carbon);border:1px solid var(--border-subtle);border-radius:var(--r-xl);padding:3rem;display:flex;gap:2.5rem;align-items:center;margin-right:2vw;transition:border-color .4s,box-shadow .4s}
+.proj-card:last-child{margin-right:10vw}
+.proj-card .pc-left{flex:1}body.light .proj-card .pc-right{background:var(--carbon)}.proj-card .pc-right{flex:1;background:var(--abyss);border-radius:var(--r-lg);border:1px solid var(--border-subtle);height:100%;display:flex;align-items:center;justify-content:center}
+.pc-idx{font-family:var(--mono);font-size:1.1rem;color:var(--green);letter-spacing:0.12em;margin-bottom:1rem}
+.proj-card .pc-left h2{font-size:2rem;margin-bottom:0.5rem}
+.proj-card .pc-left .pc-desc{color:var(--text2);font-size:0.9rem;line-height:1.6;margin-bottom:1.25rem}
+.pc-visual{text-align:center;color:var(--text3)}
+.pc-visual .nodes{font-size:0.7rem;font-family:var(--mono);line-height:1.8}
+.pc-visual .node-active{color:var(--green)}.pc-visual .node-dim{color:var(--text3)}
+.pc-tags{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:1rem}
+.pc-tags span{font-family:var(--mono);font-size:0.6rem;padding:0.18rem 0.5rem;border-radius:9999px;background:rgba(255,255,255,0.04);color:var(--text3)}
+
+.proj-progress-wrap{position:absolute;bottom:2.5rem;left:0;right:0;text-align:center;z-index:2;opacity:0;transition:opacity .4s}
+.proj-progress-wrap.visible{opacity:1}
+.proj-progress{display:inline-flex;align-items:center;gap:0.75rem;font-family:var(--mono);font-size:0.7rem;color:var(--text2)}
+.proj-progress .pp-num{color:var(--green)}
+.proj-progress .pp-bar{width:120px;height:3px;background:var(--border-subtle);border-radius:9999px;overflow:hidden}
+.proj-progress .pp-fill{height:100%;background:var(--green);border-radius:9999px;transition:width .4s}
+.proj-hint{position:absolute;bottom:1rem;left:0;right:0;text-align:center;font-family:var(--mono);font-size:0.65rem;color:var(--text3);z-index:2;opacity:0;transition:opacity .4s}
+.proj-hint.visible{opacity:1}
+
+body.light .modal-overlay{background:rgba(245,240,235,0.88)}.modal-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.active{opacity:1;pointer-events:auto}
+body.light .modal{background:var(--surface);border-color:var(--border-subtle)}.modal{background:var(--carbon);border:1px solid #2a2826;border-radius:var(--r-lg);max-width:900px;width:95%;max-height:88vh;overflow-y:auto;padding:2.5rem 3rem;box-shadow:0 20px 60px rgba(0,0,0,0.7);transform:translateY(16px);transition:transform .3s}.modal.ide{max-width:90vw;width:90vw;max-height:92vh;padding:0;overflow:hidden;border-radius:var(--r-lg);display:flex;flex-direction:column}.modal.ide #modalBody{flex:1;min-height:0;overflow:hidden}.modal.ide .m-sec-layout{height:100%}.modal.ide .modal-close{z-index:10;position:absolute;top:0.5rem;right:0.8rem}.m-sec-layout{display:flex;flex:1;min-height:0;font-family:var(--mono);font-size:0.72rem;line-height:1.55}body.light .ide-left{width:46%;min-height:0;border-right:1px solid var(--border-subtle);background:var(--carbon);overflow-y:auto;padding:2rem 1.8rem}body.light .ide-right{width:54%;min-height:0;overflow-y:auto;padding:2rem 2.5rem;color:var(--text2);background:var(--carbon)}.ide-left h3,body.light .ide-right h3{color:var(--purple);border-color:var(--border-subtle)}.ide-right h3{font-family:var(--mono);font-size:0.75rem;font-weight:600;color:var(--purple);letter-spacing:0.08em;text-transform:uppercase;margin:1.2rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:1px solid #2a2826}.ide-left h3:first-child,.ide-right h3:first-child{margin-top:0}body.light .ide-right h4{color:var(--amber)}.ide-right h4{font-size:0.72rem;color:var(--amber);margin:0.8rem 0 0.3rem}body.light .ide-right pre{background:var(--carbon);border-color:var(--border-subtle);color:var(--text2)}.ide-right pre{background:#12100e;border:1px solid #2a2826;border-radius:6px;padding:0.6rem 0.8rem;font-size:0.66rem;overflow-x:auto;color:#a0a0a0;line-height:1.5;margin:0.3rem 0 0.8rem}.ide-right code{color:var(--green)}body.light .ide-right .file-tab{background:var(--surface);border-color:var(--border-subtle)}.ide-right .file-tab{display:inline-block;background:#1e1c1a;color:var(--text2);font-size:0.65rem;padding:0.25rem 0.7rem;border-radius:4px 4px 0 0;margin-right:0.3rem;border:1px solid #2a2826;border-bottom:none}body.light .ide-topbar{background:var(--surface);border-color:var(--border-subtle)}.ide-topbar{display:flex;align-items:center;background:#12100e;border-bottom:1px solid #2a2826;padding:0.3rem 0.8rem;min-height:2rem;gap:0.3rem;font-family:var(--mono);font-size:0.62rem;color:var(--text3)}.ide-topbar .tab{display:flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:4px 4px 0 0;font-size:0.62rem;cursor:default}.ide-topbar .tab.left{background:var(--carbon);color:var(--green);border:1px solid #2a2826;border-bottom:1px solid var(--carbon);margin-bottom:-1px}.ide-topbar .tab.right{color:var(--text3)}.ide-topbar .tab .dot{width:5px;height:5px;border-radius:50%}.ide-diagram{}.ide-droot{font-size:0.58rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.8rem;padding-bottom:0.4rem;border-bottom:1px solid #2a2826}.ide-dgroup{margin-bottom:0.5rem}.ide-dgroup-hd{font-size:0.62rem;color:var(--amber);margin-bottom:0.15rem;cursor:default;display:flex;align-items:center;gap:0.3rem}.ide-dgroup-hd .arr{color:var(--text3);font-size:0.55rem}.ide-dnode{font-size:0.62rem;color:var(--text2);padding:0.12rem 0 0.12rem 1rem;display:flex;align-items:center;gap:0.4rem;line-height:1.4}.ide-dnode .d{display:inline-block;width:5px;height:5px;border-radius:50%;flex-shrink:0}.ide-dnode .d.on{background:var(--green);box-shadow:0 0 5px var(--green)}.ide-dnode .d.sb{background:var(--amber);box-shadow:0 0 4px var(--amber)}.ide-dnode .d.idle{background:var(--text3)}.ide-dnode .d.core{background:var(--purple);box-shadow:0 0 5px var(--purple)}.ide-dnode .tag{font-size:0.55rem;color:var(--text3);margin-left:auto}.ide-right .file-header{font-family:var(--mono);font-size:0.65rem;color:var(--amber);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #2a2826;letter-spacing:0.04em}.ide-right .file-header .fname{color:var(--green)}.ide-left::-webkit-scrollbar,.ide-right::-webkit-scrollbar{width:4px}.ide-left::-webkit-scrollbar-thumb,.ide-right::-webkit-scrollbar-thumb{background:var(--sb-thumb,#2a2826);border-radius:2px}body.light .arch-layer{border-color:var(--border-subtle)}.arch-graph{font-family:var(--mono);font-size:0.62rem;line-height:1.5}body.light .arch-flow-label,body.light .arch-flow-end{border-color:var(--border-subtle)}.arch-flow-label{font-size:0.5rem;letter-spacing:0.18em;color:var(--text3);margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:1px solid #1e1c1a}.arch-flow-end{font-size:0.5rem;letter-spacing:0.18em;color:var(--text3);margin-top:1rem;padding-top:0.5rem;border-top:1px solid #1e1c1a;text-align:center}body.light .arch-node{background:var(--surface);border-color:var(--border-subtle)}.arch-node{display:flex;align-items:flex-start;gap:0.8rem;padding:0.8rem;background:#0e0d0b;border:1px solid #1a1815;border-radius:6px;margin-bottom:0;position:relative}.arch-node-icon{font-size:0.9rem;color:var(--text3);flex-shrink:0;width:1.2rem;text-align:center;padding-top:0.1rem}.arch-node-body{flex:1;min-width:0}.arch-node-name{font-size:0.7rem;font-weight:600;color:var(--white);margin-bottom:0.2rem}.arch-node-sub{font-size:0.52rem;color:var(--text3);margin-bottom:0.35rem;line-height:1.35}.arch-node-hl{font-size:0.5rem;color:var(--amber);line-height:1.4;padding:0.3rem 0.5rem;background:rgba(201,100,66,0.06);border-radius:4px;border-left:2px solid rgba(201,100,66,0.2)}.arch-node-status{position:absolute;top:0.7rem;right:0.7rem;width:5px;height:5px;border-radius:50%}.arch-node-status.on{background:var(--green);box-shadow:0 0 5px var(--green)}.arch-node-status.sb{background:var(--amber);box-shadow:0 0 4px var(--amber)}.arch-node-status.core{background:var(--purple);box-shadow:0 0 5px var(--purple)}.arch-connector{display:flex;flex-direction:column;align-items:center;padding:0.15rem 0}.arch-line{width:1px;height:0.8rem;background:linear-gradient(to bottom,#1a1815,var(--text3))}.arch-arrow-head{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--text3)}body.light .doc-header{border-color:var(--border-subtle)}.doc-header{padding-bottom:0.8rem;margin-bottom:1.5rem;border-bottom:1px solid #2a2826}.doc-fname{font-size:0.9rem;font-weight:600;color:var(--white);font-family:var(--mono);margin-bottom:0.2rem}.doc-meta{font-size:0.55rem;color:var(--text3);font-family:var(--mono)}.doc-section{margin-bottom:1.8rem}.doc-h2{font-size:0.85rem;font-weight:600;color:var(--white);margin-bottom:0.6rem;font-family:var(--serif)}.doc-h3{font-size:0.65rem;font-weight:600;color:var(--amber);margin:0.8rem 0 0.4rem;font-family:var(--mono);letter-spacing:0.04em}.doc-p{font-size:0.62rem;color:var(--text2);line-height:1.65}.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin:0.5rem 0}body.light .doc-card{background:var(--surface);border-color:var(--border-subtle)}.doc-card{background:#0e0d0b;border:1px solid #1a1815;border-radius:5px;padding:0.6rem 0.7rem}.doc-card-label{font-size:0.45rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.15rem}.doc-card-val{font-size:0.62rem;font-weight:600;color:var(--text)}.doc-card-meta{font-size:0.48rem;color:var(--text3);margin-top:0.1rem}.doc-flow{display:flex;align-items:center;gap:0.2rem;margin:0.5rem 0;flex-wrap:wrap}body.light .df-node{background:var(--surface);border-color:var(--border-subtle)}.df-node{background:#0e0d0b;border:1px solid #1a1815;border-radius:4px;padding:0.3rem 0.5rem;text-align:center;font-size:0.52rem;color:var(--text);font-weight:600;min-width:2.8rem}.df-node small{display:block;font-size:0.4rem;color:var(--text3);font-weight:400}.df-arr{color:var(--text3);font-size:0.55rem}.ide-diagram{font-family:var(--mono)}.ide-droot{display:none}
+.modal-overlay.active .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:var(--text3);font-size:1.4rem;cursor:pointer;transition:color .2s}body.light .modal-close{color:var(--text2)}
+.modal-close:hover{color:var(--purple)}
+body.light .modal h2{color:var(--text)}body.light .modal .m-sub{color:var(--text2)}body.light .modal .m-sec h4{color:var(--green)}body.light .modal .m-sec p,body.light .modal .m-sec li{color:var(--text2)}.modal h2{font-size:1.5rem;margin-bottom:0.5rem}.modal .m-sub{color:var(--text2);font-size:0.82rem;margin-bottom:1.5rem}
+.modal .m-sec{margin-bottom:1.5rem}.modal .m-sec h4{font-family:var(--mono);font-size:0.85rem;letter-spacing:0.1em;color:var(--green);text-transform:uppercase;margin-bottom:0.5rem}
+.modal .m-sec a{color:var(--amber);text-decoration:underline}
+.modal .m-sec p,.modal .m-sec li{color:var(--text2);font-size:0.85rem;line-height:1.7}
+.modal .m-sec ul{list-style:none;padding:0}
+.modal .m-sec ul li{padding:0.2rem 0 0.2rem 1rem;position:relative}
+.modal .m-sec ul li::before{content:'▸';position:absolute;left:0;color:var(--purple);font-family:var(--mono);font-size:0.72rem}
+
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:1000px;margin:0 auto}
+body.light .skill-layer{transition:background-color .4s,border-color .4s;background:var(--surface)}.skill-layer{transition:background-color .4s,border-color .4s;background:var(--carbon);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:1.5rem}
+.skill-layer h4{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem}
+.skill-layer.product h4{color:var(--amber)}.skill-layer.ai h4{color:var(--green)}
+.skill-layer.business h4{color:var(--purple)}.skill-layer.system h4{color:var(--blue)}
+.skill-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+.skill-tags span{padding:0.3rem 0.65rem;border-radius:9999px;font-family:var(--mono);font-size:0.65rem;border:1px solid var(--border-subtle);color:var(--text2);background:rgba(255,255,255,0.02);transition:all .2s}
+.skill-tags span:hover{color:var(--green);border-color:var(--green)}
+
+.cert-carousel{position:relative;height:260px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.cert-card-wrap{position:absolute;width:80%;max-width:320px;transition:all 0.6s cubic-bezier(0.4,0,0.2,1);filter:blur(3px);opacity:0.3;transform:scale(0.85);pointer-events:none}
+.cert-card-wrap.active{filter:blur(0);opacity:1;transform:scale(1);z-index:2;pointer-events:auto}
+.cert-card-wrap.prev{transform:translateX(-55%) scale(0.85);z-index:1}
+.cert-card-wrap.next{transform:translateX(55%) scale(0.85);z-index:1}
+body.light .cert-inner{transition:background-color .4s,border-color .4s;background:var(--surface)}.cert-inner{transition:background-color .4s,border-color .4s;background:var(--carbon);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:2rem;text-align:center}
+.cert-inner .c-icon{font-size:1.8rem;margin-bottom:0.6rem}
+.cert-inner h5{font-family:var(--serif);font-size:1rem;color:var(--white);margin-bottom:0.2rem}
+.cert-inner p{font-size:0.68rem;color:var(--text3)}
+.cert-dots{display:flex;justify-content:center;gap:0.5rem;margin-top:0.75rem}
+.cert-dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);cursor:pointer;transition:all .3s}
+.cert-dots span.active{background:var(--purple);box-shadow:0 0 6px var(--purple);width:16px;border-radius:9999px}
+
+#connect{padding:10rem 0}
+.connect-row{display:flex;flex-wrap:wrap;justify-content:center;gap:1.25rem}
+body.light .connect-item{transition:background-color .4s,border-color .4s;background:var(--surface)}.connect-item{transition:background-color .4s,border-color .4s;display:flex;flex-direction:column;align-items:center;gap:0.4rem;padding:1.25rem 1.6rem;background:var(--carbon);border:1px solid var(--border-subtle);border-radius:var(--r-md);text-decoration:none;color:var(--text);transition:all .25s;min-width:120px}
+.connect-item:hover{border-color:var(--purple);transform:translateY(-2px)}
+.connect-item .ci-icon{font-size:1.3rem}.connect-item .ci-name{font-family:var(--mono);font-size:0.7rem;font-weight:500}.connect-item .ci-handle{font-size:0.62rem;color:var(--text3)}
+
+.qr-overlay{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.qr-overlay.active{opacity:1;pointer-events:auto}
+.qr-box{background:var(--carbon);border:1px solid #2a2826;border-radius:var(--r-lg);padding:2rem;text-align:center;max-width:300px}
+.qr-box h4{font-family:var(--mono);font-size:0.8rem;color:var(--text);margin-bottom:1rem}
+.qr-box .qr-ph{width:160px;height:160px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--r-md);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;color:var(--text3);font-family:var(--mono);font-size:0.65rem}
+.qr-box button{background:transparent;color:var(--text2);border:1px solid var(--border-subtle);border-radius:var(--r-sm);padding:0.4rem 1rem;font-family:var(--mono);font-size:0.7rem;cursor:pointer;transition:all .2s}
+.qr-box button:hover{color:var(--purple);border-color:var(--purple)}
+
+footer{text-align:center;padding:2.5rem 0;border-top:1px solid var(--border-subtle)}
+footer p{color:var(--text3);font-size:0.68rem;font-family:var(--mono)}
+footer .stat-green{color:var(--green)}
+
+@media(max-width:768px){
+  section{padding:3rem 0}.hero{padding:6rem 0 2rem;min-height:auto}
+  .hero-grid{flex-direction:column;gap:1.5rem;text-align:center}
+  .avatar-frame{width:140px;height:140px;margin:0 auto}.hero-intro{max-width:100%}
+  .nav-links{display:none}.container{padding:0 1.25rem}
+  .timeline::before{left:62px}
+  .tl-item{gap:15px}
+  .tl-item::before{left:58px}
+  .tl-date{width:55px;font-size:0.58rem}
+  .proj-stage{height:100vh;position:relative;top:auto}
+  .proj-card{transition:background-color .4s,border-color .4s;flex:0 0 85vw;flex-direction:column;padding:1.5rem;height:auto}
+  .proj-card .pc-right{height:160px}
+  .skills-grid{grid-template-columns:1fr}
+}
+/* particle hero bg */
+.hero-particle{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;opacity:0.55}
+.hero-particle canvas{width:100%!important;height:100%!important;display:block}
+.hero{position:relative;overflow:hidden}
+.hero-grid{position:relative;z-index:1}
+@media(max-width:768px){.hero-particle{opacity:0.3}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+<nav><div class="nav-inner">
+  <a href="#" class="nav-brand"><span class="prompt">devin@future</span>:<span class="dollar">~$</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero" data-i18n="nav.home">Home</a></li>
+    <li><a href="#about" data-i18n="nav.about">关于我</a></li>
+    <li><a href="#journey" data-i18n="nav.journey">Journey</a></li>
+    <li><a href="#projects" data-i18n="nav.projects">Projects</a></li>
+    <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
+    <li><a href="#connect" data-i18n="nav.connect">Connect</a></li>
+  </ul>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()"><span id="langZH" class="lang-active">中文</span>/<span id="langEN">EN</span></button>
+</div></nav>
+
+<section class="hero" id="hero">
+  <div class="hero-particle" id="heroParticle"></div>
+  <div class="hero-grid">
+  <div class="hero-avatar"><div class="avatar-frame">
+    <img id="avatarImg" src="" alt="" onerror="this.style.display='none'"><div class="avatar-ph" id="avatarPH">D</div>
+  </div></div>
+  <div class="hero-text">
+    <h1 data-i18n="hero.name">Devin</h1>
+    <div class="typewriter-wrap"><span class="typewriter" id="typewriter"></span><span class="cursor"></span></div>
+<p class="hero-intro" style="color:#c5c0ba"><span data-i18n="hero.intro">前银行对公业务经理，正在转向 AI 产品与 Agent 系统设计。希望结合业务理解与技术能力，推动 AI 产品在真实行业场景中的创新与商业化落地。</span><span class="cursor"></span></p>
+    <div class="tags">
+      <span class="tag green">AI Product</span><span class="tag purple">Agent Builder</span><span class="tag">FinTech</span><span class="tag green">0→1 Builder</span><span class="tag purple">Learning in Public</span><span class="tag">Workflow</span>
+    </div>
+    <a href="#projects" class="hero-cta" data-i18n="hero.cta">Explore My AI Lab</a>
+  </div>
+</div></section>
+
+<section id="about"><div class="container">
+  <div class="section-header"><div class="section-label" data-i18n="about.label">// About me</div><h2 data-i18n="about.title">From stability to possibility.</h2></div>
+  <div style="max-width:650px;margin:0 auto">
+    <div class="about-block"><h3 data-i18n="about.p1h">过去</h3><p data-i18n="about.p1">过去三年，我在银行做对公业务……</p></div>
+    <div class="about-block"><h3 data-i18n="about.p2h">转折</h3><p data-i18n="about.p2">我开始意识到……</p></div>
+    <div class="about-block"><h3 data-i18n="about.p3h">现在</h3><p data-i18n="about.p3">于是我开始从零学习……</p></div>
+  </div>
+</div></section>
+
+<section id="journey"><div class="container">
+  <div class="section-header"><div class="section-label">// Journey</div><h2 data-i18n="journey.title">The path</h2><p data-i18n="journey.sub">Click any item for details</p></div>
+  <div class="timeline" id="timeline"></div>
+</div></section>
+
+<section id="projects">
+  <div class="proj-stage" id="projStage">
+    <div class="proj-track" id="projTrack"></div>
+    <div class="proj-progress-wrap"><div class="proj-progress" id="projProgress"><span class="pp-num" id="ppNum">01</span> / <span id="ppTotal">06</span><div class="pp-bar"><div class="pp-fill" id="ppFill" style="width:16%"></div></div></div></div>
+    <div class="proj-hint" id="projHint">scroll to navigate · click to explore</div>
+  </div>
+</section>
+
+<section id="skills"><div class="container">
+  <div class="section-header"><div class="section-label">// Skills & Certs</div><h2 data-i18n="skills.title">Capabilities</h2></div>
+  <div class="skills-grid" id="skillsGrid"></div>
+</div></section>
+
+<section id="connect"><div class="container">
+  <div class="section-header"><div class="section-label">// Connect</div><h2 data-i18n="connect.title">Find me</h2></div>
+  <div class="connect-row" id="connectRow"></div>
+</div></section>
+
+<footer><p style="transition:color .4s">> <span class="stat-green">system.status = evolving</span>  ·  Built with curiosity, caffeine and countless late nights.</p></footer>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeModal()">&times;</button><div id="modalBody"></div></div></div>
+<div class="qr-overlay" id="qrOverlay" onclick="closeQR(event)"><div class="qr-box" onclick="event.stopPropagation()"><h4>微信</h4><div class="qr-ph">二维码</div><button onclick="closeQR()">关闭</button></div></div>
+
+<script>
+var i18n={zh:{
+  'nav.home':'首页','nav.about':'关于我','nav.journey':'Journey','nav.projects':'Projects','nav.skills':'Skills','nav.connect':'Connect',
+  'hero.name':'Devin','hero.intro':'前银行对公业务经理，正在转向 AI 产品与 Agent 系统设计。希望结合业务理解与技术能力，推动 AI 产品在真实行业场景中的创新与商业化落地。','hero.cta':'Explore My AI Lab',
+  'about.title':'From stability to possibility.','about.p1h':'过去','about.p2h':'转折','about.p3h':'现在','about.label':'// About me',
+  'about.p1':'过去三年，我在银行做对公业务。企业贷款、国际结算、信用证、银承、存款指标、授信审批……每天都在真实的商业系统里运转。这段经历让我理解了：企业如何运作、风险如何被评估、资金如何流动、一个复杂组织如何协同。但也让我第一次认真思考：如果一份工作三年后、五年后、甚至十年后都能一眼看到终点，那我真正积累的，到底是什么？',
+  'about.p2':'我开始意识到：自己正在一个高度稳定、但也高度确定的系统里，被慢慢「驯化」。每天都很忙。但那种忙，更像是在维护系统，而不是创造新的东西。与此同时，我看到另一个世界正在快速生长：AI、Agent、产品、自动化、多模态、个人开发者……有人在重新定义工具，有人在重新定义工作方式，甚至有人开始重新定义「公司」本身。而我不想只是旁观。',
+  'about.p3':'于是我开始从零学习：产品设计、LLM、RAG、Agent、Memory、Workflow。没有互联网背景，没有技术团队，甚至一开始连「该从哪里开始」都不知道。但也是在这种焦虑里，我慢慢意识到：真正危险的，不是从零开始。而是很多年后，发现自己从来没有真正开始过。现在，我正在构建属于自己的 AI 系统与产品。从银行到 AI，对我来说不是一次行业切换。而是一次思维方式的重建。',
+  'journey.title':'走过的路','journey.sub':'点击查看详情','skills.title':'能力与证书','connect.title':'找到我','proj.title':'Projects & Architecture','proj.sub':'Scroll to navigate · click to explore'
+},en:{
+  'nav.home':'Home','nav.about':'About','nav.journey':'Journey','nav.projects':'Projects','nav.skills':'Skills','nav.connect':'Connect',
+  'hero.name':'Devin','hero.intro':'Former corporate banking associate transitioning into AI product and agent system design. Combining business understanding with technical capability to drive AI innovation in real-world industry scenarios.','hero.cta':'View Projects',
+  'about.title':'From stability to possibility.','about.p1h':'The Past','about.p2h':'The Turn','about.p3h':'Now','about.label':'// About me',
+  'about.p1':'For three years, I worked in corporate banking. Corporate loans, international settlements, letters of credit, bank acceptances, deposit targets, credit approvals — every day operating within real business systems. I learned how enterprises function, how risk is assessed, how capital flows, how complex organizations coordinate. But it also made me ask: if I can see exactly where I will be in three, five, ten years — what am I really accumulating?',
+  'about.p2':'I realized I was being gradually "domesticated" inside a highly stable but highly deterministic system. Busy every day, but maintaining rather than creating. Meanwhile, another world was growing fast: AI, agents, products, automation, multimodal, indie builders… Some were redefining tools, some redefining how we work, some even redefining what a "company" means. I didn\'t want to just watch.',
+  'about.p3':'So I started learning from zero: product design, LLMs, RAG, agents, memory, workflow. No internet background, no tech team, at first not even knowing where to begin. But in that anxiety I slowly realized: the real danger isn\'t starting from zero. It\'s looking back years later and realizing you never really started at all. Now I\'m building my own AI systems and products. From banking to AI — for me, it\'s not a career switch. It\'s a rebuild of how I think.',
+  'journey.title':'The path','journey.sub':'Click any item for details','skills.title':'Capabilities','connect.title':'Find me','proj.title':'Projects & Architecture','proj.sub':'Scroll to navigate · click to explore'
+}};
+var lang='zh';
+function t(k){return i18n[lang][k]||i18n.en[k]||k}
+function toggleLang(){lang=lang==='zh'?'en':'zh';document.getElementById('langZH').classList.toggle('lang-active',lang==='zh');document.getElementById('langEN').classList.toggle('lang-active',lang==='en');twIdx=0;twChar=0;twDeleting=false;renderAll()}
+function renderAll(){document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=t(el.getAttribute('data-i18n'))});buildJourney();buildProjects();buildSkills();buildConnect()}
+
+var taglines={zh:['构建从 0 到 1 的 AI 产品。','设计有灵魂的智能体。','从银行到 AI。','把想法变成可运行的 demo。','在公开中学习。'],en:['Building AI products from 0→1.','Designing agents with soul.','From banking to AI.','Turning ideas into working demos.','Learning in public.']};
+var twIdx=0,twChar=0,twDeleting=false;
+function typewriterTick(){var txt=taglines[lang][twIdx],el=document.getElementById('typewriter');if(!twDeleting){if(twChar<txt.length){el.textContent=txt.substring(0,twChar+1);twChar++}else{twDeleting=true;setTimeout(typewriterTick,2000);return}}else{el.textContent='';twDeleting=false;twIdx=(twIdx+1)%taglines[lang].length;twChar=0}setTimeout(typewriterTick,40)}
+typewriterTick();
+
+var tlData=[
+  {tag:{zh:'AI项目',en:'AI Project'},cls:'project',date:'2026',title:{zh:'Hermes Agent',en:'Hermes Agent'},sub:{zh:'Building a multi-layer AI Agent system',en:'Building a multi-layer AI Agent system'},desc:{zh:'从零设计并实现了一个生产级自主 CLI 智能体——覆盖 Brain 六层智能路由、双模人格系统 v4.1、四眼调度器感知层、双层记忆架构、多供应商 Fallback 熔断、子Agent 编排引擎、三层自愈基础设施、全链路 Token 优化等 16 章架构模块',en:'Designed and built a production-grade autonomous CLI agent from scratch — 6-layer Brain routing, dual-mode persona v4.1, Four-Eyes perception scheduler, dual-layer memory architecture, multi-provider fallback with circuit breakers, Sub-Agent orchestration engine, 3-tier self-healing infrastructure, and end-to-end token optimization across 16 architectural chapters.'},modal:{zh:'<div class="m-sec"><h4>1. 成本设计</h4><p><span style="color:var(--purple)">▸</span> 识别 Prompt Cache 120 倍价差，重构会话路由策略并设计 Session STICKY 锁定机制，相比动态智能路由模式，预计年 API 成本降低约 90%。</p><p><span style="color:var(--purple)">▸</span> 路由管线前三层基于启发式规则，&lt;5ms + 零 API 成本覆盖 60%+ 消息，减少不必要的模型调用。</p><p><span style="color:var(--purple)">▸</span> 构建感知调度层，低成本预判问题复杂度后再选模型；8 个辅助模块分流独立模型，避免抢占主力配额。</p></div><div class="m-sec"><h4>2. 系统稳定性</h4><p><span style="color:var(--purple)">▸</span> 15 步处理链路每层独立 fail-safe；模型/供应商两级熔断器自动切换，状态持久化保证重启后不丢失。</p><p><span style="color:var(--purple)">▸</span> API 密钥四重冗余存储，支持自动检测与逐级恢复；自愈体系三层递进，优先使用零成本规则诊断。</p><p><span style="color:var(--purple)">▸</span> 四层数据保护：秒级即时回滚、手动快照、Git 版本控制、每日自动全量快照。</p></div><div class="m-sec"><h4>3. 人格与安全</h4><p><span style="color:var(--purple)">▸</span> 基于同一人格基线的 WORK/LIFE 双关系距离设计：命令触发与上下文信号自动切换，执行层共享记忆，交互层提供差异化交互体验。</p><p><span style="color:var(--purple)">▸</span> 独立门控检测器置于人格系统之上，自动化场景强制锁定工作模式，不可绕过。</p><p><span style="color:var(--purple)">▸</span> 建立反模式知识库，将 11 个已修复的系统级陷阱文档化，防止同类问题复现。</p></div><div class="m-sec"><h4>4. 记忆与知识管理</h4><p><span style="color:var(--purple)">▸</span> RAG 检索增强：FTS5 全文索引 → Query Rewrite → Rerank 语义排序，跨会话召回命中率 83%。</p><p><span style="color:var(--purple)">▸</span> 双层记忆架构：内置记忆 session 启动冻结保护缓存，外部知识图谱动态检索设 3 秒熔断超时。</p><p><span style="color:var(--purple)">▸</span> 持久化知识沉淀：LLM-Wiki 构建可查询的互联知识库 + Obsidian 本地笔记管理 + NotebookLM 深度文档分析，形成从即时对话到长期沉淀的完整链路。</p><p><span style="color:var(--purple)">▸</span> 单一权威架构文档，代码变更必须同步更新，消除文档漂移。</p></div><div class="m-sec"><h4>5. 多 Agent 编排</h4><p><span style="color:var(--purple)">▸</span> 子 Agent 结果需父 Agent 独立验证，不信任自报；9 个角色支持并行执行与流水线编排。</p></div>',en:'<div class="m-sec"><h4>1. Cost Engineering</h4><p><span style="color:var(--purple)">▸</span> Identified Prompt Cache 120x price gap, redesigned session routing with STICKY lock — ~90% annual API cost reduction vs dynamic routing.</p><p><span style="color:var(--purple)">▸</span> First 3 routing layers are heuristic-based, &lt;5ms + zero API cost covering 60%+ messages.</p><p><span style="color:var(--purple)">▸</span> Perception scheduler pre-assesses complexity before model selection; 8 auxiliary modules offload from primary quota.</p></div><div class="m-sec"><h4>2. System Stability</h4><p><span style="color:var(--purple)">▸</span> 15-step pipeline with per-layer fail-safe; dual-level circuit breakers (model/provider) with persistent state across restarts.</p><p><span style="color:var(--purple)">▸</span> 4-layer credential redundancy with auto-detection and progressive recovery; 3-tier self-healing favoring zero-cost rule-based diagnosis.</p><p><span style="color:var(--purple)">▸</span> 4-layer data protection: instant rollback, manual snapshots, Git version control, daily full snapshots.</p></div><div class="m-sec"><h4>3. Persona & Security</h4><p><span style="color:var(--purple)">▸</span> WORK/LIFE dual-mode on a single persona baseline: command-triggered + context-signal auto-switching, shared memory at execution layer, differentiated interaction at presentation layer.</p><p><span style="color:var(--purple)">▸</span> Independent gatekeeper detector above persona system, auto-lock to WORK mode in automated contexts — non-bypassable.</p><p><span style="color:var(--purple)">▸</span> Anti-pattern knowledge base: 11 resolved system-level traps documented to prevent recurrence.</p></div><div class="m-sec"><h4>4. Memory & Knowledge</h4><p><span style="color:var(--purple)">▸</span> RAG pipeline: FTS5 full-text → Query Rewrite → Rerank semantic ranking, 83% cross-session recall rate.</p><p><span style="color:var(--purple)">▸</span> Dual-layer memory: built-in memory with session-start freeze protection, external knowledge graph with 3-second circuit-breaker timeout.</p><p><span style="color:var(--purple)">▸</span> Persistent knowledge pipeline: LLM-Wiki (queryable interlinked KB) + Obsidian (local notes) + NotebookLM (deep document analysis) — from real-time dialogue to long-term沉淀.</p><p><span style="color:var(--purple)">▸</span> Single authoritative architecture document, code changes must sync — eliminating doc drift.</p></div><div class="m-sec"><h4>5. Multi-Agent Orchestration</h4><p><span style="color:var(--purple)">▸</span> Sub-agent results require independent parent verification — never trust self-reports; 9 roles support parallel execution and pipeline orchestration.</p></div>'}},
+{tag:{zh:'AI项目',en:'AI Project'},cls:'project',date:'2026',title:{zh:'任务驱动型学习平台',en:'Task-Driven Learning Platform'},sub:{zh:'Designing a PM learning platform for beginners through vibe coding',en:'Designing a PM learning platform for beginners through vibe coding'},desc:{zh:'围绕"0 经验转行产品"的核心痛点，设计产出型的学习平台',en:'Building an outcome-oriented learning platform focused on the core pain points of people transitioning into product management with no prior experience.'},modal:{zh:'<div class="m-sec"><h4>KKs PM Growth Lab</h4><ul><li>定位 0 经验转行者的三大学习痛点（知识碎片化、学完即忘、无成果沉淀），设计任务驱动式学习闭环</li><li>独立完成全流程：用户调研 → 需求分析 → 功能设计 → Figma 原型迭代 → PRD 撰写 → 平台上线</li><li>搭建并上线平台网站（<a href="https://epic-straw-91960890.figma.site" target="_blank">epic-straw-91960890.figma.site</a>），将产品知识体系转化为可交互的学习路径</li></ul></div>',en:'<div class="m-sec"><h4>Problem & Solution</h4><ul><li>3 pain points: fragmented knowledge, learn-and-forget, no portfolio</li><li>Task-driven learning loop: input→practice→output→feedback</li></ul></div><div class="m-sec"><h4>Full Process</h4><ul><li>User research→requirements→design→Figma prototyping</li><li>PRD→launch (epic-straw-91960890.figma.site)</li><li>Transformed PM knowledge into interactive learning paths</li></ul></div>'}},
+  {tag:{zh:'工作',en:'Work'},cls:'work',date:'2024 - 2026',title:{zh:'中国工商银行',en:'ICBC'},sub:{zh:'对公客户经理',en:'Corporate Banking Manager'},desc:{zh:'管理500+企业客户、资金规模超¥1亿，主导10+授信项目总额超¥3000万',en:'Understanding real business systems. Responsible for corporate client services, credit projects, and risk analysis.'},modal:{zh:'<div class="m-sec"><h4>1. 客户拓展与运营</h4><ul><li>构建500+企业客户标签画像体系</li><li>分层运营策略，覆盖现金管理、融资授信、跨境结算、供应链金融四大场景</li><li>管理企业资金规模超¥1亿，月均资金增长¥100万</li></ul></div><div class="m-sec"><h4>2. 企业融资全流程管理</h4><ul><li>主导10+个授信项目（总额超¥3000万）</li><li>独立完成客户尽调、财务分析、信用分析、风险评估、审批报告撰写及贷后监控</li></ul></div><div class="m-sec"><h4>3. AI智能柜员项目</h4><ul><li>参与智能客服机器人试点，拆解高频场景需求并排序</li><li>优化FAQ知识库，客户问题自助解决率提升30%</li></ul></div><div class="m-sec"><h4>4. 跨境金融解决方案设计</h4><ul><li>协助企业运用套期保值、外汇期权等工具对冲汇率风险，提供定制化跨境金融解决方案</li></ul></div>',en:'<div class="m-sec"><h4>Client Operations</h4><ul><li>Built 500+ corporate client profiles with tagging system</li><li>Tiered operations across cash management, credit, cross-border settlement, supply chain finance</li><li>Managed ¥100M+ funds, ¥1M monthly avg growth</li></ul></div><div class="m-sec"><h4>Credit & Risk</h4><ul><li>Led 10+ credit projects (¥30M+ total)</li><li>Due diligence, financial analysis, risk assessment, loan monitoring</li></ul></div><div class="m-sec"><h4>AI Initiative</h4><ul><li>Smart customer service bot pilot — decomposed high-frequency scenarios</li><li>Optimized FAQ KB, self-resolution rate +30%</li></ul></div>'}},
+  {tag:{zh:'教育',en:'Education'},cls:'edu',date:'2022 - 2023',title:{zh:'利兹大学',en:'University of Leeds'},sub:{zh:'LLM International Banking and Finance Law',en:'LLM International Banking and Finance Law'},desc:{zh:'培养国际视野与批判性分析，逐渐形成更强的结构化思维',en:'Developed global perspectives and critical analysis skills, while gradually building stronger structured thinking.'},modal:{zh:'<div class="m-sec"><h4>1. 学术表现</h4><ul><li>Grade：Merit-68（前10%）</li></ul></div><div class="m-sec"><h4>2. 主修课程</h4><ul><li>国际银行法、公司法、公司金融和证券法、破产法、仲裁法、网络法</li></ul></div>',en:'<div class="m-sec"><h4>Academic</h4><ul><li>Merit-68 (top 10%)</li><li>International banking law, corporate law, securities law, insolvency, arbitration, cyberlaw</li></ul></div>'}},
+  {tag:{zh:'工作',en:'Work'},cls:'work',date:'2022',title:{zh:'国投证券',en:'SDIC Securities'},sub:{zh:'财富管理部实习生',en:'Wealth Management Intern'},desc:{zh:'撰写基金分析报告，净值追踪与业绩归因；独立运营公众号，单篇均阅300+',en:'Focused on investment research and financial product analysis.'},modal:{zh:'<div class="m-sec"><h4>1. 研究产出</h4><ul><li>撰写基金分析报告，通过净值追踪与业绩归因分析形成数据驱动的研究产出</li></ul></div><div class="m-sec"><h4>2. 内容运营</h4><ul><li>独立运营公众号，单篇平均阅读300+</li><li>积累用户增长与内容策略经验</li></ul></div>',en:'<div class="m-sec"><h4>Research</h4><ul><li>Fund analysis reports with NAV tracking & performance attribution</li></ul></div><div class="m-sec"><h4>Content</h4><ul><li>Independent WeChat blog, 300+ avg reads per post</li><li>User growth & content strategy experience</li></ul></div>'}},
+  {tag:{zh:'创业项目',en:'Startup'},cls:'project',date:'2020 - 2021',title:{zh:'C2C 考研平台',en:'C2C Postgraduate Exam Platform'},sub:{zh:'My first attempt to build something',en:'My first attempt to build something'},desc:{zh:'从需求洞察到产品设计，从想法到落地，获得种子投资并搭建了一个连接教师与学生的点对点交易平台',en:'From identifying user needs to product design, and from idea to execution, I secured seed investment and built a peer-to-peer platform connecting teachers and students.'},modal:{zh:'<div class="m-sec"><h4>1. 用户洞察</h4><ul><li>调研20位教师+150位学生</li><li>识别三大痛点：教师获客难、学生选择窄、网课成本虚高</li></ul></div><div class="m-sec"><h4>2. 产品设计</h4><ul><li>设计C2C撮合机制、教师评级体系、课程个性化选择方案</li><li>降低师生匹配摩擦</li></ul></div><div class="m-sec"><h4>3. 运营成果</h4><ul><li>独立运营公众号，单篇最高阅读600+</li><li>基于高频问题库搭建智能客服FAQ系统</li><li>社群月活率达65%</li><li>获 ¥10 万种子投资</li></ul></div>',en:'<div class="m-sec"><h4>User Research</h4><ul><li>Surveyed 20 teachers + 150 students</li><li>3 pain points: teacher acquisition, narrow student choice, inflated pricing</li></ul></div><div class="m-sec"><h4>Product Design</h4><ul><li>C2C matching mechanism + rating system + personalized course selection</li><li>Reduced teacher-student matching friction</li></ul></div><div class="m-sec"><h4>Operations</h4><ul><li>WeChat blog, top post 600+ reads</li><li>Smart FAQ system from high-frequency question bank</li><li>65% community monthly active rate</li></ul></div>'}},
+  {tag:{zh:'教育',en:'Education'},cls:'edu',date:'2018 - 2022',title:{zh:'上海立信会计金融学院',en:'Shanghai Lixin University of Accounting and Finance'},sub:{zh:'经济统计学学士',en:'BSc Economics & Statistics'},desc:{zh:'Statistics shaped how I think；学生会部长经历',en:'Statistics trained my analytical thinking, while student union leadership experience taught me how teams collaborate, communicate, and execute.'},modal:{zh:'<div class="m-sec"><h4>1. 学术</h4><ul><li>GPA：3.1/4.0（前20%）</li><li>主修：Python语言与数据挖掘、应用多元统计分析、市场调查、商务经济统计、数理统计学</li></ul></div><div class="m-sec"><h4>2. 实践</h4><ul><li>学生会部长</li><li>第六届中国国际"互联网+"大学生创新创业大赛校三等奖</li></ul></div>',en:'<div class="m-sec"><h4>Academic</h4><ul><li>GPA 3.1/4.0 (top 20%)</li><li>Python & data mining, multivariate statistics, market research, mathematical statistics</li></ul></div><div class="m-sec"><h4>Activities</h4><ul><li>Student union leadership</li><li>C2C exam prep startup (¥100K seed)</li><li>Data analysis projects</li></ul></div>'}}
+];
+function buildJourney(){
+  document.getElementById('timeline').innerHTML=tlData.map(function(item,i){return '<div class="tl-item '+item.cls+'" onclick="openTLModal('+i+')"><div class="tl-date">'+item.date+'</div><div class="tl-card"><div class="tl-title-row"><span class="tl-title">'+item.title[lang]+'</span><span class="tl-tag '+item.cls+'">'+item.tag[lang]+'</span></div><div class="tl-sub">'+item.sub[lang]+'</div><div class="tl-desc">'+item.desc[lang]+'</div></div></div>'}).join('')
+}
+var projData=[
+{img:'项目/[00]/个人网站项目[00]封面 - Hermes架构设计.png',title:{zh:'Hermes Agent',en:'Hermes Agent'},desc:{zh:'16 章架构：六层路由、双模人格、四眼感知、双层记忆、多模型 fallback、子Agent 编排、自愈基础设施',en:'16-chapter architecture: 6-layer routing, dual-mode persona, 4-eye perception, dual-layer memory, multi-model fallback, Sub-Agent orchestration, self-healing infra'},tags:['Agent','Memory','RAG','MCP'],nodes:['Gateway ▸ online','Memory ▸ active','Orchestrator ▸ idle','Infra ▸ healthy'],modal:{zh:'<div class="m-sec"><h4>1. 成本设计</h4><p><span style="color:var(--purple)">▸</span> 识别 Prompt Cache 120 倍价差，重构会话路由策略并设计 Session STICKY 锁定机制，相比动态智能路由模式，预计年 API 成本降低约 90%。</p><p><span style="color:var(--purple)">▸</span> 路由管线前三层基于启发式规则，&lt;5ms + 零 API 成本覆盖 60%+ 消息，减少不必要的模型调用。</p><p><span style="color:var(--purple)">▸</span> 构建感知调度层，低成本预判问题复杂度后再选模型；8 个辅助模块分流独立模型，避免抢占主力配额。</p></div><div class="m-sec"><h4>2. 系统稳定性</h4><p><span style="color:var(--purple)">▸</span> 15 步处理链路每层独立 fail-safe；模型/供应商两级熔断器自动切换，状态持久化保证重启后不丢失。</p><p><span style="color:var(--purple)">▸</span> API 密钥四重冗余存储，支持自动检测与逐级恢复；自愈体系三层递进，优先使用零成本规则诊断。</p><p><span style="color:var(--purple)">▸</span> 四层数据保护：秒级即时回滚、手动快照、Git 版本控制、每日自动全量快照。</p></div><div class="m-sec"><h4>3. 人格与安全</h4><p><span style="color:var(--purple)">▸</span> 基于同一人格基线的 WORK/LIFE 双关系距离设计：命令触发与上下文信号自动切换，执行层共享记忆，交互层提供差异化交互体验。</p><p><span style="color:var(--purple)">▸</span> 独立门控检测器置于人格系统之上，自动化场景强制锁定工作模式，不可绕过。</p><p><span style="color:var(--purple)">▸</span> 建立反模式知识库，将 11 个已修复的系统级陷阱文档化，防止同类问题复现。</p></div><div class="m-sec"><h4>4. 记忆与知识管理</h4><p><span style="color:var(--purple)">▸</span> RAG 检索增强：FTS5 全文索引 → Query Rewrite → Rerank 语义排序，跨会话召回命中率 83%。</p><p><span style="color:var(--purple)">▸</span> 双层记忆架构：内置记忆 session 启动冻结保护缓存，外部知识图谱动态检索设 3 秒熔断超时。</p><p><span style="color:var(--purple)">▸</span> 持久化知识沉淀：LLM-Wiki 构建可查询的互联知识库 + Obsidian 本地笔记管理 + NotebookLM 深度文档分析，形成从即时对话到长期沉淀的完整链路。</p><p><span style="color:var(--purple)">▸</span> 单一权威架构文档，代码变更必须同步更新，消除文档漂移。</p></div><div class="m-sec"><h4>5. 多 Agent 编排</h4><p><span style="color:var(--purple)">▸</span> 子 Agent 结果需父 Agent 独立验证，不信任自报；9 个角色支持并行执行与流水线编排。</p></div>',en:'<div class="m-sec"><h4>1. Cost Engineering</h4><p><span style="color:var(--purple)">▸</span> Identified Prompt Cache 120x price gap, redesigned session routing with STICKY lock — ~90% annual API cost reduction vs dynamic routing.</p><p><span style="color:var(--purple)">▸</span> First 3 routing layers are heuristic-based, &lt;5ms + zero API cost covering 60%+ messages.</p><p><span style="color:var(--purple)">▸</span> Perception scheduler pre-assesses complexity before model selection; 8 auxiliary modules offload from primary quota.</p></div><div class="m-sec"><h4>2. System Stability</h4><p><span style="color:var(--purple)">▸</span> 15-step pipeline with per-layer fail-safe; dual-level circuit breakers (model/provider) with persistent state across restarts.</p><p><span style="color:var(--purple)">▸</span> 4-layer credential redundancy with auto-detection and progressive recovery; 3-tier self-healing favoring zero-cost rule-based diagnosis.</p><p><span style="color:var(--purple)">▸</span> 4-layer data protection: instant rollback, manual snapshots, Git version control, daily full snapshots.</p></div><div class="m-sec"><h4>3. Persona & Security</h4><p><span style="color:var(--purple)">▸</span> WORK/LIFE dual-mode on a single persona baseline: command-triggered + context-signal auto-switching, shared memory at execution layer, differentiated interaction at presentation layer.</p><p><span style="color:var(--purple)">▸</span> Independent gatekeeper detector above persona system, auto-lock to WORK mode in automated contexts — non-bypassable.</p><p><span style="color:var(--purple)">▸</span> Anti-pattern knowledge base: 11 resolved system-level traps documented to prevent recurrence.</p></div><div class="m-sec"><h4>4. Memory & Knowledge</h4><p><span style="color:var(--purple)">▸</span> RAG pipeline: FTS5 full-text → Query Rewrite → Rerank semantic ranking, 83% cross-session recall rate.</p><p><span style="color:var(--purple)">▸</span> Dual-layer memory: built-in memory with session-start freeze protection, external knowledge graph with 3-second circuit-breaker timeout.</p><p><span style="color:var(--purple)">▸</span> Persistent knowledge pipeline: LLM-Wiki (queryable interlinked KB) + Obsidian (local notes) + NotebookLM (deep document analysis).</p><p><span style="color:var(--purple)">▸</span> Single authoritative architecture document, code changes must sync — eliminating doc drift.</p></div><div class="m-sec"><h4>5. Multi-Agent Orchestration</h4><p><span style="color:var(--purple)">▸</span> Sub-agent results require independent parent verification — never trust self-reports; 9 roles support parallel execution and pipeline orchestration.</p></div>'}},
+{img:'项目/[01]/KK\'s PM Growth Lab.jpg',title:{zh:"KK's PM Growth Lab",en:"KK's PM Growth Lab"},desc:{zh:'一条通过Vibe Coding从0到1完成产品实践的路径——任务驱动型学习平台',en:'A path from 0 to 1 through Vibe Coding — task-driven PM learning platform.'},tags:['Product','PM','Figma','Vibe Coding'],nodes:['Research ▸ done','Design ▸ done','Figma ▸ live','Launch ▸ live'],modal:{zh:'<div class="m-sec"><h4>KKs PM Growth Lab</h4><ul><li>定位 0 经验转行者的三大学习痛点（知识碎片化、学完即忘、无成果沉淀）</li><li>设计任务驱动式学习闭环：输入→练习→输出→反馈</li><li>独立完成全流程：用户调研 → 需求分析 → 功能设计 → Figma 原型迭代 → PRD 撰写 → 平台上线</li></ul></div>',en:'<div class="m-sec"><h4>KKs PM Growth Lab</h4><ul><li>3 pain points: fragmented knowledge, learn-and-forget, no portfolio</li><li>Task-driven learning loop: input→practice→output→feedback</li><li>Full process: research→requirements→design→Figma→PRD→launch</li></ul></div>'}},
+{title:{zh:'求职助手',en:'Job Assistant'},desc:{zh:'AI 驱动的求职自动化产品 · 即将上线',en:'AI-powered job hunting automation · Coming soon'},tags:['SaaS','Automation','Product'],nodes:['Backend ▸ building','Frontend ▸ pending','Launch ▸ Q3'],modal:{zh:'<div class="m-sec"><h4>Product Vision</h4><p>多平台 AI 求职助手 SaaS——自动扫描匹配、智能投递、追踪反馈，帮你从重复操作中解放出来。</p><p style="color:var(--amber);margin-top:1rem">▸ 研发中，即将开放内测</p></div>',en:'<div class="m-sec"><h4>Product Vision</h4><p>Multi-platform AI job assistant SaaS — auto scan and match, smart apply, tracking dashboard. Free yourself from repetitive operations.</p><p style="color:var(--amber);margin-top:1rem">▸ In development, beta coming soon</p></div>'}}
+];
+var projTotal=projData.length;
+
+function buildProjects(){
+var track=document.getElementById('projTrack');
+track.innerHTML='<div class="proj-label">// Projects<span class="proj-demo">Demo</span></div>'+projData.map(function(p,i){return '<div class="proj-card" onclick="openProject('+i+')" style="margin-right:'+(i<projTotal-1?'2vw':'10vw')+'"><div class="pc-left"><div class="pc-idx">['+String(i).padStart(2,'0')+']</div><h2>'+p.title[lang]+'</h2><p class="pc-desc">'+p.desc[lang]+'</p><div class="pc-tags">'+p.tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div></div><div class="pc-right"><div class="pc-visual"><div class="nodes">'+p.nodes.map(function(n,j){return '<div class="'+(j===0?'node-active':'node-dim')+'">'+n+'</div>'}).join('')+'</div></div></div></div>'}).join('');
+initScrollTrigger();
+}
+
+function initScrollTrigger(){
+gsap.registerPlugin(ScrollTrigger);
+var track=document.getElementById('projTrack');
+var stage=document.querySelector('.proj-stage');
+var totalX=track.scrollWidth-stage.clientWidth;
+if(totalX<=0)return;
+ScrollTrigger.getById('projST')&&ScrollTrigger.getById('projST').kill();
+var cards=track.querySelectorAll('.proj-card');
+var stageW=stage.clientWidth;
+gsap.to(track,{x:-totalX,ease:'none',scrollTrigger:{id:'projST',trigger:stage,pin:true,scrub:0.3,start:'top top',end:'+='+(totalX*0.5),onUpdate:function(self){var p=self.progress;updateCardVisuals(p);updateProgressBar(p);var s=p>0.01&&p<0.99;document.getElementById('projProgress').parentElement.classList.toggle('visible',s);document.getElementById('projHint').classList.toggle('visible',s)}}});
+}
+function updateCardVisuals(p){var cards=document.querySelectorAll('.proj-card'),n=cards.length,s=1/(n-1||1);cards.forEach(function(c,i){var d=Math.abs(p-i*s)/s,t=Math.min(1,d);c.style.opacity=1-t*0.5;c.style.transform='scale('+(1-t*0.08)+')';c.style.filter='blur('+(t*2)+'px)';c.style.borderColor=t<0.3?'var(--green)':'var(--border-subtle)';c.style.boxShadow=t<0.3?'0 0 60px rgba(0,217,146,'+(0.08*(1-t))+')':'none'})}
+function updateProgressBar(p){document.getElementById('ppNum').textContent=String(Math.round(p*(projTotal-1))+1).padStart(2,'0');document.getElementById('ppTotal').textContent=String(projTotal).padStart(2,'0');document.getElementById('ppFill').style.width=(p*100)+'%'}
+
+var skillLayers=[
+{cls:'product',title:{zh:'Product',en:'Product'},items:{zh:['Product Thinking','User Research','PRD','Workflow Design','MVP Design','0→1 Building'],en:['Product Thinking','User Research','PRD','Workflow Design','MVP Design','0→1 Building']}},
+{cls:'ai',title:{zh:'AI',en:'AI'},items:{zh:['LLM','RAG','AI Agent','Prompt Engineering','Memory System','Multi-Agent','Python','OpenAI API','Vector DB','MCP','API Integration','System Architecture'],en:['LLM','RAG','AI Agent','Prompt Engineering','Memory System','Multi-Agent','Python','OpenAI API','Vector DB','MCP','API Integration','System Architecture']}},
+{cls:'business',title:{zh:'Business',en:'Business'},items:{zh:['FinTech','Risk Analysis','Corporate Banking','Business Analysis','Cross-border Finance','Enterprise Workflow'],en:['FinTech','Risk Analysis','Corporate Banking','Business Analysis','Cross-border Finance','Enterprise Workflow']}},
+{cls:'system',title:{zh:'System',en:'System'},items:{zh:['Architecture Design','Cost Governance','Self-Healing','Cron & Automation','Multi-Provider','Fail-Safe Design'],en:['Architecture Design','Cost Governance','Self-Healing','Cron & Automation','Multi-Provider','Fail-Safe Design']}}
+];
+var certData=[
+{icon:'■',clr:'var(--amber)',title:{zh:'CFC 金融顾问',en:'CFC Financial Consultant'},sub:{zh:'2024',en:'2024'}},
+{icon:'◉',clr:'var(--green)',title:{zh:'CFA ESG 证书',en:'CFA ESG Certificate'},sub:{zh:'CFA 协会 · 2024',en:'CFA Institute · 2024'}},
+{icon:'◆',clr:'var(--purple)',title:{zh:'初级会计',en:'Junior Accountant'},sub:{zh:'2023',en:'2023'}},
+{icon:'♦',clr:'var(--green)',title:{zh:'硕士毕业证',en:'MSc Diploma'},sub:{zh:'利兹大学 · 2024',en:'University of Leeds · 2024'}},
+{icon:'★',clr:'var(--amber)',title:{zh:'本科毕业证',en:'BSc Diploma'},sub:{zh:'上海立信 · 2022',en:'Shanghai Lixin · 2022'}}
+];
+var certIdx=0,certPaused=false,certTimer=null;
+function buildSkills(){
+var html=skillLayers.map(function(l){return '<div class="skill-layer '+l.cls+'"><h4>'+l.title[lang]+'</h4><div class="skill-tags">'+l.items[lang].map(function(i){return '<span>'+i+'</span>'}).join('')+'</div></div>'}).join('');
+html+='<div class="skill-layer" style="display:flex;flex-direction:column;align-items:center" id="certLayer"><h4 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple);margin-bottom:1rem">Certs</h4><div class="cert-carousel" id="certCarousel"></div><div class="cert-dots" id="certDots"></div></div>';
+document.getElementById('skillsGrid').innerHTML=html;
+buildCertCarousel();
+}
+function buildCertCarousel(){
+var carousel=document.getElementById('certCarousel');
+carousel.innerHTML=certData.map(function(c,i){var pos='';if(i===certIdx)pos='active';else if(i===(certIdx-1+certData.length)%certData.length)pos='prev';else if(i===(certIdx+1)%certData.length)pos='next';return '<div class="cert-card-wrap '+pos+'" style="color:'+c.clr+'"><div class="cert-inner"><div class="c-icon">'+c.icon+'</div><h5>'+c.title[lang]+'</h5><p>'+c.sub[lang]+'</p></div></div>'}).join('');
+document.getElementById('certDots').innerHTML=certData.map(function(_,i){return '<span class="'+(i===certIdx?'active':'')+'" onclick="rotateCert('+i+')"></span>'}).join('');
+carousel.onmouseenter=function(){certPaused=true;clearInterval(certTimer)};
+carousel.onmouseleave=function(){certPaused=false;certTimer=setInterval(autoCert,2000)};
+carousel.onwheel=function(e){e.preventDefault();if(e.deltaY>0)rotateCert((certIdx+1)%certData.length);else rotateCert((certIdx-1+certData.length)%certData.length)};
+if(!certPaused){clearInterval(certTimer);certTimer=setInterval(autoCert,2000)}
+}
+function autoCert(){if(!certPaused)rotateCert((certIdx+1)%certData.length)}
+function rotateCert(i){certIdx=i;buildCertCarousel()}
+
+var connectData=[
+{icon:'◆',name:{zh:'GitHub',en:'GitHub'},handle:{zh:'@devin',en:'@devin'},url:'https://github.com'},
+{icon:'♥',name:{zh:'小红书',en:'RED'},handle:{zh:'@devin',en:'@devin'},url:'https://www.xiaohongshu.com'},
+{icon:'@',name:{zh:'邮箱',en:'Email'},handle:{zh:'devin@example.com',en:'devin@example.com'},url:'mailto:devin@example.com'},
+{icon:'☁',name:{zh:'微信',en:'WeChat'},handle:{zh:'扫码添加',en:'Scan QR'},qr:true},
+{icon:'✶',name:{zh:'LinkedIn',en:'LinkedIn'},handle:{zh:'/in/devin',en:'/in/devin'},url:'#'}
+];
+function buildConnect(){document.getElementById('connectRow').innerHTML=connectData.map(function(c){if(c.qr)return'<a href="#" class="connect-item" onclick="openQR();return false"><div class="ci-icon">'+c.icon+'</div><div class="ci-name">'+c.name[lang]+'</div><div class="ci-handle">'+c.handle[lang]+'</div></a>';return'<a href="'+c.url+'" class="connect-item" target="_blank"><div class="ci-icon">'+c.icon+'</div><div class="ci-name">'+c.name[lang]+'</div><div class="ci-handle">'+c.handle[lang]+'</div></a>'}).join('')}
+
+function openProject(i){if(i===0){window.open('https://lace-brave-26334835.figma.site','_blank')}else if(i===1){window.open('https://epic-straw-91960890.figma.site','_blank')}else{openProjModal(i)}}
+function openTLModal(idx){var item=tlData[idx];document.getElementById('modalBody').innerHTML='<h2>'+item.title[lang]+'</h2><div class="m-sub">'+item.sub[lang]+' · '+item.date+'</div>'+item.modal[lang];document.getElementById('modalOverlay').classList.add('active')}
+function openProjModal(i){var p=projData[i];var m=document.querySelector('.modal');if(i===0){m.classList.add('ide');document.getElementById('modalBody').innerHTML='<div class="ide-topbar"><div class="tab left" style="background:#1e1c1a;color:var(--text)"><span class="dot" style="background:var(--green)"></span> ARCHITECTURE</div><div class="tab right"><span class="dot" style="background:var(--text3)"></span> DESIGN_BIBLE.md</div></div><div class="m-sec-layout"><div class="ide-left"> <div class="arch-graph"> <div class="arch-flow-label">DATA FLOW</div> <div class="arch-node"> <div class="arch-node-icon">◆</div> <div class="arch-node-body"> <div class="arch-node-name">Multi-Modal Perception</div> <div class="arch-node-sub">WeChat · Telegram · CLI · Cron / Webhook</div> <div class="arch-node-hl">统一四通道入口，四眼调度器预判复杂度，免费预加载优先</div> </div> <div class="arch-node-status on"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◇</div> <div class="arch-node-body"> <div class="arch-node-name">Brain · Intelligent Router</div> <div class="arch-node-sub">L0 Preprocess → L0.5 Cache → L1 Heuristic → L2 Planner → Exec → Fallback</div> <div class="arch-node-hl">前三层 &lt;5ms 零 API 成本覆盖 60%+ 消息。Session Affinity 锁定最优模型，Prompt Caching 识别 120× 价差，年 API 降 ~90%</div> </div> <div class="arch-node-status on"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◆</div> <div class="arch-node-body"> <div class="arch-node-name">Memory System</div> <div class="arch-node-sub">Built-in Memory · Hindsight KG · Session Search RAG</div> <div class="arch-node-hl">双层架构：内置记忆 4K session 冻结快照 + Hindsight 知识图谱动态检索。FTS5 → Query Rewrite → Rerank，跨会话召回命中率 83%</div> </div> <div class="arch-node-status on"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◇</div> <div class="arch-node-body"> <div class="arch-node-name">Persona Engine</div> <div class="arch-node-sub">SOUL.md v4.1 · WORK/LIFE 双模 · ModeDetector</div> <div class="arch-node-hl">同一人格基线两种关系距离。独立门控检测器，自动化场景强制锁不可绕过。11 反模式知识库防止系统级陷阱复现</div> </div> <div class="arch-node-status core"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◆</div> <div class="arch-node-body"> <div class="arch-node-name">Agent Orchestration</div> <div class="arch-node-sub">9 Roles · delegate_task · SDD / Kanban</div> <div class="arch-node-hl">四层编排引擎：身份→路由→并行→合成。子Agent 上下文隔离，父Agent 独立验证结果，不信任自报</div> </div> <div class="arch-node-status sb"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◇</div> <div class="arch-node-body"> <div class="arch-node-name">Self-Healing & Reliability</div> <div class="arch-node-sub">3-Tier Diagnosis · Circuit Breaker · 4-Layer Archive</div> <div class="arch-node-hl">API Key 四重冗余自动恢复。模型/供应商两级熔断器，状态持久化。15 步全链路每层独立 fail-safe</div> </div> <div class="arch-node-status sb"></div> </div> <div class="arch-flow-end">▾ OUTPUT</div> </div> </div><div class="ide-right"> <div class="doc-header"> <div class="doc-fname">DESIGN_BIBLE.md</div> <div class="doc-meta">v3.3 · 16 Chapters · 未央 (Audra) + Devin</div> </div> <div class="doc-section"> <div class="doc-h2">设计哲学</div> <div class="doc-p">稳定性 &gt; 成本 &gt; 性能 &gt; 延迟。分层迭代，每层独立 fail-safe。过早复杂是不稳定的根源。架构层归位：人格→SOUL.md，偏好→Memory，流程→Skill。</div> </div> <div class="doc-section"> <div class="doc-h2">模型矩阵</div> <div class="doc-grid"> <div class="doc-card"> <div class="doc-card-label">主力</div> <div class="doc-card-val">DeepSeek v4 Pro</div> <div class="doc-card-meta">1M ctx · ¥12/24 per M</div> </div> <div class="doc-card"> <div class="doc-card-label">低成本</div> <div class="doc-card-val">DeepSeek Flash</div> <div class="doc-card-meta">¥1/2 per M</div> </div> <div class="doc-card"> <div class="doc-card-label">视觉</div> <div class="doc-card-val">Qwen3-VL-Plus</div> <div class="doc-card-meta">DashScope</div> </div> <div class="doc-card"> <div class="doc-card-label">编码</div> <div class="doc-card-val">Kimi-for-Coding</div> <div class="doc-card-meta">standby</div> </div> </div> </div> <div class="doc-section"> <div class="doc-h2">Brain 智能路由</div> <div class="doc-h3">六层管线</div> <div class="doc-flow"> <span class="df-node">L0<br><small>预处理</small></span> <span class="df-arr">→</span> <span class="df-node">L0.5<br><small>指纹缓存</small></span> <span class="df-arr">→</span> <span class="df-node">L1<br><small>启发式</small></span> <span class="df-arr">→</span> <span class="df-node">L2<br><small>Planner</small></span> <span class="df-arr">→</span> <span class="df-node">Exec<br><small>解析</small></span> <span class="df-arr">→</span> <span class="df-node">FB<br><small>熔断</small></span> </div> <div class="doc-p">前三层基于启发式规则，&lt;5ms + 零 API 成本覆盖 60%+ 消息。L2 Planner 用 Flash 模型分类 simple / complex（conf &lt; 0.60 → 强制 complex）。Session Affinity（STICKY）锁定最优模型减少切换成本。Vision Re-Route：图像检测→VL 模型提取描述→重新走完整 Brain pipeline。</div> <div class="doc-h3">5 Providers · 8 Auxiliary · 8-Layer Global Fallback</div> <div class="doc-p">openai-compatible（★主力）· dashscope · kimi-coding · glm · gemini（视觉兜底）。8 个辅助模块分流独立模型。模型级熔断 3 次失败→open 60s，提供商级 5 次→open 120s，状态持久化到 circuit_breakers.json。</div> </div> <div class="doc-section"> <div class="doc-h2">双模人格系统</div> <div class="doc-p">SOUL.md v4.1 定义不变核心（工程判断 / 质量门控 / 成本意识，永远激活）+ WORK / LIFE 两种关系距离。ModeDetector 作为 Brain pre-L1 拦截器：自动化场景（cron / subagent）强制 WORK 不可绕过。"Audra" 命令切换 LIFE，"说正事" / "未央" 切回 WORK。LIFE→WORK 支持自动感知（技术关键词 / 任务指令 / 系统名词，单一信号 ≥ 0.75 即触发）。LIFE 模式对话隔离：不写入 MEMORY.md 或 Hindsight，仅存 session transcript。</div> </div> <div class="doc-section"> <div class="doc-h2">记忆与知识管理</div> <div class="doc-p">双层记忆架构：L1 内置记忆（MEMORY.md 4K + USER.md 2.5K，session 启动冻结快照保护 Prompt Cache，10 种威胁扫描 + StreamingContextScrubber）；L2 Hindsight 知识图谱（外部动态检索，3s 熔断超时）。Session Search：SQLite FTS5 全文索引 → Query Rewrite（Flash 模型）→ Rerank 语义排序 → LLM 摘要，跨会话召回命中率 83%。持久化知识沉淀链路：LLM-Wiki 可查询互联知识库 + Obsidian 本地笔记 + NotebookLM 深度分析。</div> </div> <div class="doc-section"> <div class="doc-h2">编排与稳定性</div> <div class="doc-h3">子Agent 编排</div> <div class="doc-p">四层引擎：身份模型→路由决策→并行执行→结果合成。9 个角色（软件架构师 / 高级 PM / 智能体编排者 / UX 架构师 / 招聘专家 / 产品经理 / 学习规划师 / 测试分析师 / 高管摘要师），delegate_task 并行派发（max 3），SDD / Kanban 结构化开发流。子Agent 上下文隔离，父Agent 独立验证不信任自报。</div> <div class="doc-h3">自愈基础设施</div> <div class="doc-p">三层诊断自愈：L1 网关健康检查（cron / 10min）→ L2 配置守护（自动检测 + 逐级恢复）→ L3 四眼调度器（零成本规则优先）。API Key 四重冗余（config / auth / systemd / bashrc）自动检测恢复。四层数据保护：秒级即时回滚→手动快照→Git 版本控制→每日全量快照。15 步端到端调用链路每层独立 fail-safe。</div></div></div></div>'}else{m.classList.remove('ide');document.getElementById('modalBody').innerHTML='<h2>'+p.title[lang]+'</h2><div class="m-sub">Case Study ['+String(i).padStart(2,'0')+']</div>'+p.modal[lang]}document.getElementById('modalOverlay').classList.add('active')}
+function closeModal(e){if(e&&e.target!==e.currentTarget)return;document.querySelector('.modal').classList.remove('ide');document.getElementById('modalOverlay').classList.remove('active')}
+function openQR(){document.getElementById('qrOverlay').classList.add('active')}
+function closeQR(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('qrOverlay').classList.remove('active')}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closeQR()}});
+
+var navLinks=document.querySelectorAll('.nav-links a');
+var sectionIds=['hero','about','journey','projects','skills','connect'];
+var sectionEls=sectionIds.map(function(id){return document.getElementById(id)}).filter(Boolean);
+var observer=new IntersectionObserver(function(entries){
+  var best=null,bestRatio=0;
+  entries.forEach(function(e){
+    if(e.isIntersecting&&e.intersectionRatio>bestRatio){best=e.target;bestRatio=e.intersectionRatio}
+  });
+  if(best){var id=best.id;navLinks.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+id)})}
+},{threshold:[0,0.2,0.4,0.6,0.8,1],rootMargin:'-56px 0px 0px 0px'});
+sectionEls.forEach(function(s){observer.observe(s)});
+
+
+renderAll();buildSkills();
+setTimeout(function(){certTimer=setInterval(autoCert,2000)},300);
+</script>
+
+<script>
+(function(){
+  function upd(){
+    var p=document.getElementById('projects');
+    if(!p)return;
+    var r=p.getBoundingClientRect();
+    var t=1-(r.top/window.innerHeight);
+    t=t<0?0:t>1?1:t;
+    t=t*t*(3-2*t);
+    var rr=Math.round(8+237*t),gg=Math.round(8+232*t),bb=Math.round(10+225*t);
+    document.body.style.background='rgb('+rr+','+gg+','+bb+')';
+    var light=t>0.35;
+    if(light){document.body.classList.add('light')}
+    else{document.body.classList.remove('light')}
+    var de=document.documentElement;
+    var sr=Math.round(42+162*t),sg=Math.round(40+164*t),sb=Math.round(38+166*t);
+    var tr=Math.round(8+237*t),tg=Math.round(8+232*t),tb=Math.round(10+225*t);
+    de.style.setProperty('scrollbar-color','rgb('+sr+','+sg+','+sb+') rgb('+tr+','+tg+','+tb+')','important');
+    de.style.setProperty('--sb-thumb','rgb('+sr+','+sg+','+sb+')');
+    de.style.setProperty('--sb-track','rgb('+tr+','+tg+','+tb+')');
+  }
+  window.addEventListener('scroll',upd,{passive:true});
+  upd();
+})();
+</script>
+
+<!-- Hero particle butterfly background -->
+<script type="module">
+import * as THREE from 'three';
+
+const container = document.getElementById('heroParticle');
+if (container) {
+  const W = container.clientWidth || window.innerWidth;
+  const H = container.clientHeight || window.innerHeight;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 1000);
+  camera.position.set(0, 1, 42);
+
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true, alpha: true, powerPreference: 'high-performance'
+  });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  const COUNT = 100000;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(COUNT * 3);
+  const tgtPos = new Float32Array(COUNT * 3);
+  const cols = new Float32Array(COUNT * 3);
+  const tgtCols = new Float32Array(COUNT * 3);
+  const offsets = new Float32Array(COUNT * 3);
+
+  const color1 = new THREE.Color('#6366f1');  // indigo
+  const color2 = new THREE.Color('#4f46e5');  // deep indigo
+  const color3 = new THREE.Color('#818cf8');  // soft violet
+  const color4 = new THREE.Color('#a5b4fc');  // light periwinkle
+
+  // Start: sphere
+  for (let i = 0; i < COUNT; i++) {
+    const i3 = i * 3;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 12 * (0.85 + Math.random() * 0.3);
+    pos[i3]     = r * Math.sin(phi) * Math.cos(theta);
+    pos[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    pos[i3 + 2] = r * Math.cos(phi);
+    offsets[i3] = (Math.random() - 0.5) * 2;
+    offsets[i3+1] = (Math.random() - 0.5) * 2;
+    offsets[i3+2] = (Math.random() - 0.5) * 2;
+    const cr = Math.random();
+    const c = cr > 0.15 ? color3 : (cr > 0.05 ? color1 : color2);
+    cols[i3] = c.r; cols[i3+1] = c.g; cols[i3+2] = c.b;
+  }
+
+  // Butterfly x-y plane
+  const bflyScale = 7.0;
+  const spread = 2.0;
+  const zSpread = 10;
+  for (let i = 0; i < COUNT; i++) {
+    const i3 = i * 3;
+    const t = (i / COUNT) * Math.PI * 12;
+    const exp = Math.exp(Math.cos(t)) - 2 * Math.cos(4 * t) - Math.pow(Math.sin(t / 12), 5);
+    const ox = Math.sin(t) * exp * bflyScale;
+    const oy = Math.cos(t) * exp * bflyScale;
+    const z0 = (Math.random() - 0.5) * zSpread;
+    const x = ox;
+    const y = oy;
+    const z = z0;
+    tgtPos[i3]     = x + (Math.random() - 0.5) * spread;
+    tgtPos[i3 + 1] = y + (Math.random() - 0.5) * spread;
+    tgtPos[i3 + 2] = z + (Math.random() - 0.5) * spread;
+    tgtCols[i3] = cols[i3]; tgtCols[i3+1] = cols[i3+1]; tgtCols[i3+2] = cols[i3+2];
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('targetPosition', new THREE.BufferAttribute(tgtPos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  geo.setAttribute('targetColor', new THREE.BufferAttribute(tgtCols, 3));
+  geo.setAttribute('randomOffset', new THREE.BufferAttribute(offsets, 3));
+
+  // Vortex + random motion
+  const vert = `
+uniform float uTime; uniform float uMorph; uniform float uPointSize;
+uniform int uEffectMode; uniform float uEffectIntensity; uniform float uExplosionTime;
+attribute vec3 targetPosition; attribute vec3 targetColor;
+attribute vec3 color; attribute vec3 randomOffset;
+varying vec3 vColor; varying float vDistance;
+void main(){
+  vColor=mix(color,targetColor,uMorph);
+  vec3 pos=mix(position,targetPosition,uMorph);
+  vec3 originalPos=pos;
+  float emix=uEffectIntensity;
+  if(uEffectMode==3){
+    float angle=atan(pos.z,pos.x); float radius=length(pos.xz); float height=pos.y;
+    float ss=uTime*2.0+height*0.3;
+    float na=angle+ss*emix;
+    float vp=(1.0-abs(height)/20.0)*emix;
+    float nr=radius*(1.0-vp*0.5)+sin(uTime*3.0+height)*emix;
+    float lift=emix*5.0*(1.0-radius/20.0);
+    pos.x=cos(na)*nr; pos.z=sin(na)*nr; pos.y=height+lift*sin(uTime+radius);
+  }
+  vec4 mv=modelViewMatrix*vec4(pos,1.0); float dist=length(pos);
+  vDistance=dist; float sm=1.0;
+  gl_PointSize=(uPointSize/-mv.z)*(1.2+sin(uTime*3.0+dist*0.15)*0.5)*sm;
+  gl_Position=projectionMatrix*mv;
+}`;
+
+  const frag = `
+uniform float uTime; varying vec3 vColor; varying float vDistance;
+void main(){
+  float d=distance(gl_PointCoord,vec2(0.5)); if(d>0.5) discard;
+  float s=pow(1.0-d*2.0,1.6);
+  vec3 fc=vColor*2.0;
+  float a=s*(0.8+sin(vDistance*0.3+uTime)*0.2);
+  gl_FragColor=vec4(fc,a);
+}`;
+
+  const mat = new THREE.ShaderMaterial({
+    vertexShader: vert, fragmentShader: frag,
+    uniforms: {
+      uTime: { value: 0 }, uMorph: { value: 1.0 }, uPointSize: { value: 160 },
+      uEffectMode: { value: 3 }, uEffectIntensity: { value: 1.0 },
+      uExplosionTime: { value: 0 },
+    },
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  });
+
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.005;
+    mat.uniforms.uTime.value = time;
+    points.rotation.z = time * 0.07;
+    points.rotation.y = time * 0.07;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  function onResize() {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  window.addEventListener('resize', onResize);
+}
+</script>
+
+</body>
+</html>
