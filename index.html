@@ -220,9 +220,31 @@ footer .stat-green{color:var(--green)}
   .cert-carousel{height:260px}
   .cert-inner img{max-height:200px}
   .about-block h3{font-size:.9rem}
-  .about-block p{font-size:.85rem}
+  .about-block p{font-size:.88rem;line-height:1.85}
+  .about-block h3{font-size:.95rem}
+  .hamburger{display:flex}
+  .tl-item{gap:8px;padding:2px 0}
+  .tl-card{padding:.9rem}
+  .tl-date{font-size:0.6rem;width:48px}
+  .connect-item{min-width:90px;padding:.9rem 1.1rem}
+  .hero-intro{font-size:.88rem;line-height:1.7}
+  .proj-card:active{transform:scale(0.98)!important}
+  .tl-item:active .tl-card{transform:scale(0.98);transition:transform .15s}
   footer{padding:1.5rem 0}footer p{font-size:.62rem}
+  section{padding:2.5rem 0}
+  .section-header{margin-bottom:2rem}
 }
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:auto;align-items:center;justify-content:center;z-index:10}
+.hamburger span{width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;display:block;transform-origin:center}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(2.5px,2.5px)}
+.hamburger.active span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(2.5px,-2.5px)}
+.mobile-menu{position:fixed;top:3.5rem;left:0;right:0;bottom:0;background:rgba(8,8,10,0.97);backdrop-filter:blur(16px);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;opacity:0;pointer-events:none;transition:opacity .3s}
+.mobile-menu.active{opacity:1;pointer-events:auto}
+.mobile-menu a{font-size:1.2rem;color:var(--text2);text-decoration:none;font-family:var(--sans);letter-spacing:0.05em;padding:0.6rem 1.5rem;transition:color .2s}
+.mobile-menu a:hover,.mobile-menu a:active{color:var(--green)}
+body.light .mobile-menu{background:rgba(250,248,245,0.97)}
+
 /* particle hero bg */
 .hero-particle{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;opacity:0.55}
 .hero-particle canvas{width:100%!important;height:100%!important;display:block}
@@ -247,8 +269,17 @@ footer .stat-green{color:var(--green)}
     <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
     <li><a href="#connect" data-i18n="nav.connect">Connect</a></li>
   </ul>
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
   <button class="lang-btn" id="langBtn" onclick="toggleLang()"><span id="langZH" class="lang-active">中文</span>/<span id="langEN">EN</span></button>
 </div></nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#hero" onclick="closeMobileMenu()" data-i18n="nav.home">首页</a>
+  <a href="#about" onclick="closeMobileMenu()" data-i18n="nav.about">关于我</a>
+  <a href="#journey" onclick="closeMobileMenu()" data-i18n="nav.journey">历程</a>
+  <a href="#projects" onclick="closeMobileMenu()" data-i18n="nav.projects">项目</a>
+  <a href="#skills" onclick="closeMobileMenu()" data-i18n="nav.skills">能力</a>
+  <a href="#connect" onclick="closeMobileMenu()" data-i18n="nav.connect">联系</a>
+</div>
 
 <section class="hero" id="hero">
   <div class="hero-particle" id="heroParticle"></div>
@@ -447,8 +478,11 @@ var observer=new IntersectionObserver(function(entries){
   if(best){var id=best.id;navLinks.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+id)})}
 },{threshold:[0,0.2,0.4,0.6,0.8,1],rootMargin:'-56px 0px 0px 0px'});
 sectionEls.forEach(function(s){observer.observe(s)});
+window.addEventListener('scroll',function(){closeMobileMenu()},{passive:true});
 
 
+function toggleMobileMenu(){var m=document.getElementById('mobileMenu'),h=document.getElementById('hamburgerBtn');m.classList.toggle('active');h.classList.toggle('active')}
+function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('active');document.getElementById('hamburgerBtn').classList.remove('active')}
 renderAll();buildSkills();
 </script>
 
@@ -495,11 +529,11 @@ if (container) {
     antialias: true, alpha: true, powerPreference: 'high-performance'
   });
   renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 2));
   renderer.setClearColor(0x000000, 0);
   container.appendChild(renderer.domElement);
 
-  const COUNT = 100000;
+  const COUNT = window.innerWidth < 768 ? 30000 : 100000;
   const geo = new THREE.BufferGeometry();
   const pos = new Float32Array(COUNT * 3);
   const tgtPos = new Float32Array(COUNT * 3);
