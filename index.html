@@ -197,12 +197,18 @@ footer .stat-green{color:var(--green)}
   .tl-card{padding:.8rem}
   .tl-title{font-size:.9rem}
   .tl-desc{display:none}
-  .proj-stage{height:100vh;position:relative;top:auto}
-  .proj-track{padding-left:8vw}
-  .proj-card{flex:0 0 82vw;flex-direction:column;padding:1.2rem;height:auto;gap:1rem}
+  .proj-stage{height:100vh;position:relative;top:auto;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .proj-stage::-webkit-scrollbar{display:none}
+  .proj-track{padding-left:8vw;scroll-snap-align:start}
+  .proj-card{flex:0 0 82vw;flex-direction:column;padding:1.2rem;height:auto;gap:1rem;scroll-snap-align:center}
+  .proj-card:first-child{scroll-snap-align:start}
+  .proj-card:last-child{margin-right:8vw;scroll-snap-align:end}
   .proj-card .pc-right{height:auto;aspect-ratio:4/3;width:100%}
   .proj-card .pc-left h2{font-size:1.3rem}
   .pc-desc{font-size:.78rem}
+  .proj-hint{display:none!important}
+  .proj-progress-wrap{display:none!important}
+
   .skills-grid{flex-direction:column}
   #certLayer{width:100%!important}
   .connect-row{gap:.75rem}
@@ -397,6 +403,7 @@ initScrollTrigger();
 }
 
 function initScrollTrigger(){
+if(window.innerWidth<768)return;
 gsap.registerPlugin(ScrollTrigger);
 var track=document.getElementById('projTrack');
 var stage=document.querySelector('.proj-stage');
