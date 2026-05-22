@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audra 求职助手 · AI 全自动求职系统</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23111111'/><path d='M8 24L14 8L16 12L12 24H8Z' fill='%23fff'/><path d='M24 24L18 8L16 12L20 24H24Z' fill='%23fff' fill-opacity='.7'/><circle cx='16' cy='18' r='1.5' fill='%2347d096'/></svg>">
+<style>
+  :root {
+    --color-midnight-ink: #111111;
+    --color-canvas-white: #ffffff;
+    --color-surface-charcoal: #272625;
+    --color-muted-ash: #6d6c6b;
+    --color-whisper-gray: #f4f3ef;
+    --color-light-taupe: #ecebea;
+    --color-phoenix-orange: #e8400d;
+    --color-deep-indigo: #10054d;
+    --color-midnight-violet: #2e2460;
+    --color-intelligence-blue: #328efa;
+    --color-deliver-green: #47d096;
+    --color-leadgen-red: #e16540;
+    --color-engagement-gold: #fbc768;
+    --color-petal-pink: #ffd7f0;
+    --gradient-phoenix: radial-gradient(386.06% 162.79% at -13.19% -17.1%, rgb(232,64,13) 0%, rgb(255,238,216) 26.16%, rgb(208,178,255) 84.15%);
+    --gradient-cyan: radial-gradient(80.17% 109.2% at 52.12% 62.54%, rgb(208,178,255) 0%, rgb(198,236,233) 35.28%, rgb(153,255,249) 96.56%);
+
+    --font-sans: -apple-system,BlinkMacSystemFont,'Inter','SF Pro','Noto Sans SC',sans-serif;
+    --font-mono: 'SF Mono','Fira Code','JetBrains Mono',monospace;
+    --spacing-4:4px;--spacing-8:8px;--spacing-12:12px;--spacing-16:16px;--spacing-20:20px;
+    --spacing-24:24px;--spacing-28:28px;--spacing-36:36px;--spacing-40:40px;
+    --spacing-48:48px;--spacing-56:56px;--spacing-84:84px;--spacing-100:100px;
+    --radius-cards:12px;--radius-buttons:8px;--radius-badges:12px;
+    --shadow-sm: rgba(17,17,17,0.02) 0px -6px 6px 0px, rgba(17,17,17,0.01) 0px -23px 9px 0px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-canvas-white);
+    color: var(--color-midnight-ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  .container { max-width:1200px; margin:0 auto; padding:0 var(--spacing-40); }
+
+  /* ── Navigation ── */
+  nav {
+    position: fixed; top:0; z-index:100; width:100%;
+    background: rgba(255,255,255,0.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(17,17,17,0.06);
+  }
+  nav .inner {
+    max-width:1200px; margin:0 auto;
+    display:flex; align-items:center; height:56px;
+    padding:0 var(--spacing-40); gap:var(--spacing-24);
+  }
+  nav .brand { font-size:16px; font-weight:600; letter-spacing:-.3px; }
+  nav .links { display:flex; gap:var(--spacing-4); }
+  nav .links a {
+    padding:8px 14px; border-radius:var(--radius-buttons);
+    font-size:13px; font-weight:500; color:var(--color-muted-ash);
+    text-decoration:none; transition:all .2s ease;
+  }
+  nav .links a:hover { background:var(--color-whisper-gray); color:var(--color-midnight-ink); }
+  nav .cta {
+    margin-left:auto;
+    padding:8px 18px; border-radius:var(--radius-buttons);
+    background:var(--color-midnight-ink); color:var(--color-canvas-white);
+    font-size:13px; font-weight:500; text-decoration:none;
+    transition:opacity .15s;
+  }
+  nav .cta:hover { opacity:.85; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative; overflow: hidden;
+    padding: var(--spacing-100) 0 var(--spacing-84);
+    text-align: center;
+  }
+  .hero-bg {
+    position: absolute; inset:0; z-index:0;
+    opacity: .8;
+    background:
+      radial-gradient(ellipse 80% 70% at 30% 30%, rgba(232,64,13,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 80% at 70% 60%, rgba(153,255,249,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 60% at 50% 80%, rgba(208,178,255,0.35) 0%, transparent 50%);
+    animation: heroAmbient 8s ease-in-out infinite alternate;
+  }
+  @keyframes heroAmbient {
+    0% {
+      background:
+        radial-gradient(ellipse 80% 70% at 30% 30%, rgba(232,64,13,0.5) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 80% at 70% 60%, rgba(153,255,249,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 60% at 50% 80%, rgba(208,178,255,0.35) 0%, transparent 50%);
+    }
+    100% {
+      background:
+        radial-gradient(ellipse 70% 80% at 60% 20%, rgba(232,64,13,0.45) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 30% 70%, rgba(153,255,249,0.5) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(208,178,255,0.4) 0%, transparent 45%);
+    }
+  }
+  .hero-inner { position:relative; z-index:1; }
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:var(--spacing-8);
+    padding:5px 14px; border-radius:20px; border:1px solid rgba(17,17,17,.1);
+    font-family:var(--font-mono); font-size:10px;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--color-muted-ash); margin-bottom:var(--spacing-24);
+  }
+  .hero-badge .dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--color-deliver-green);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(71,208,150,0.4); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(71,208,150,0); }
+  }
+  .hero h1 {
+    font-size:56px; font-weight:600; letter-spacing:-2.24px; line-height:1.05;
+    margin-bottom:var(--spacing-20);
+    animation: fadeUpIn 0.8s ease-out;
+  }
+  .hero h1 em {
+    font-style:normal;
+    background:linear-gradient(135deg, var(--color-phoenix-orange), var(--color-intelligence-blue));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  @keyframes fadeUpIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .btn-primary {
+    padding:12px 24px; border-radius:var(--radius-buttons);
+    background:var(--color-midnight-ink); color:var(--color-canvas-white);
+    font-size:14px; font-weight:500; text-decoration:none;
+    transition: transform 0.2s ease, opacity 0.15s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 20px rgba(17,17,17,0.15);
+  }
+  .hero p {
+    font-size:18px; color:var(--color-muted-ash);
+    max-width:620px; margin:0 auto var(--spacing-36);
+    line-height:1.6;
+  }
+  .hero-stats {
+    display:flex; justify-content:center; gap:var(--spacing-48);
+    margin-bottom:var(--spacing-40);
+  }
+  .hero-stat {
+    text-align:center;
+  }
+  .hero-stat .num {
+    font-size:40px; font-weight:500; letter-spacing:-1.2px; line-height:1;
+    margin-bottom:var(--spacing-4);
+  }
+  .hero-stat .lbl {
+    font-family:var(--font-mono); font-size:10px;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--color-muted-ash);
+  }
+  .hero-cta {
+    display:flex; justify-content:center; gap:var(--spacing-12);
+  }
+  .btn-ghost {
+    padding:12px 24px; border-radius:var(--radius-buttons);
+    background:transparent; color:var(--color-midnight-ink);
+    font-size:14px; font-weight:500; text-decoration:none;
+    border:1px solid rgba(17,17,17,.12);
+    transition:all .15s;
+  }
+  .btn-ghost:hover { border-color:var(--color-midnight-ink); }
+
+  /* ── Section ── */
+  section { padding: var(--spacing-84) 0; }
+  .section-header {
+    max-width:680px; margin:0 auto var(--spacing-48);
+    text-align:center;
+  }
+  .section-header h2 {
+    font-size:36px; font-weight:600; letter-spacing:-1.08px;
+    line-height:1.15; margin-bottom:var(--spacing-12);
+  }
+  .section-header p {
+    font-size:16px; color:var(--color-muted-ash);
+    line-height:1.6;
+  }
+  .section-label {
+    font-family:var(--font-mono); font-size:10px;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--color-muted-ash); margin-bottom:var(--spacing-8);
+  }
+
+  /* ── Problem-Solution ── */
+  .grid-2 {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:var(--spacing-24); max-width:1000px; margin:0 auto;
+  }
+  .grid-3 {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    gap:var(--spacing-16);
+  }
+  .card {
+    background:var(--color-whisper-gray);
+    border-radius:var(--radius-cards);
+    padding:var(--spacing-28);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(17,17,17,0.08);
+  }
+  .card h3 {
+    font-size:18px; font-weight:600; letter-spacing:-.3px;
+    margin-bottom:var(--spacing-8);
+  }
+  .card p {
+    font-size:14px; color:var(--color-muted-ash);
+    line-height:1.6;
+  }
+  .card .icon {
+    width:40px; height:40px; border-radius:var(--radius-cards);
+    background:var(--color-canvas-white);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; margin-bottom:var(--spacing-16);
+  }
+
+  /* ── Architecture ── */
+  .arch-diagram {
+    max-width:900px; margin:0 auto;
+    background:var(--color-surface-charcoal);
+    border-radius:var(--radius-cards);
+    padding:var(--spacing-40);
+    overflow-x:auto;
+  }
+  .arch-row {
+    display:flex; align-items:center; gap:var(--spacing-8);
+    margin-bottom:var(--spacing-12); flex-wrap:wrap; justify-content:center;
+  }
+  .arch-box {
+    padding:10px 18px; border-radius:var(--radius-buttons);
+    font-size:13px; font-weight:500; white-space:nowrap;
+  }
+  .arch-box.src { background:var(--color-leadgen-red); color:#fff; }
+  .arch-box.proc { background:var(--color-intelligence-blue); color:#fff; }
+  .arch-box.out { background:var(--color-deliver-green); color:var(--color-midnight-ink); }
+  .arch-box.plat { background:var(--color-engagement-gold); color:var(--color-midnight-ink); }
+  .arch-arrow {
+    font-family:var(--font-mono); font-size:14px;
+    color:rgba(255,255,255,.4);
+  }
+
+  /* ── Stats Cards (data live) ── */
+  .stats-grid {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:var(--spacing-16); max-width:1000px; margin:0 auto;
+  }
+  .stat-card {
+    background:var(--color-whisper-gray);
+    border-radius:var(--radius-cards);
+    padding:var(--spacing-20);
+    text-align:center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(17,17,17,0.06);
+  }
+  .stat-card .num {
+    font-size:32px; font-weight:500; letter-spacing:-.64px;
+    margin-bottom:var(--spacing-4);
+  }
+  .stat-card .lbl {
+    font-family:var(--font-mono); font-size:10px;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--color-muted-ash);
+  }
+
+  /* ── Technical Details (expandable) ── */
+  .tech-item {
+    border-bottom:1px solid var(--color-light-taupe);
+    padding:var(--spacing-20) 0;
+  }
+  .tech-item summary {
+    cursor:pointer;
+    font-size:16px; font-weight:600; letter-spacing:-.2px;
+    list-style:none;
+    display:flex; align-items:center; gap:var(--spacing-8);
+  }
+  .tech-item summary::before {
+    content:'+'; font-family:var(--font-mono);
+    font-size:14px; color:var(--color-muted-ash);
+    width:20px; transition:transform .2s;
+  }
+  .tech-item[open] summary::before {
+    content:'−';
+  }
+  .tech-item .tech-body {
+    margin-top:var(--spacing-12);
+    margin-left:var(--spacing-28);
+    font-size:14px; color:var(--color-muted-ash);
+    line-height:1.7;
+  }
+  .tech-item .tech-body code {
+    font-family:var(--font-mono); font-size:13px;
+    background:var(--color-whisper-gray);
+    padding:2px 8px; border-radius:4px;
+    color:var(--color-midnight-ink);
+  }
+  .tech-tags {
+    display:flex; gap:var(--spacing-8); flex-wrap:wrap;
+    margin-top:var(--spacing-8);
+  }
+  .tech-tag {
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
+    padding:3px 10px; border-radius:var(--radius-badges);
+    border:1px solid rgba(17,17,17,.08);
+    color:var(--color-muted-ash);
+  }
+
+  /* ── Video module placeholder ── */
+  .demo-spot {
+    max-width:900px; margin:0 auto;
+    background:var(--color-surface-charcoal);
+    border-radius:var(--radius-cards);
+    aspect-ratio:16/9;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .demo-spot::before {
+    content:''; position:absolute; inset:0;
+    background:var(--gradient-phoenix); opacity:.15;
+  }
+  .demo-spot-inner {
+    position:relative; z-index:1; text-align:center;
+  }
+  .demo-spot-inner .play-icon {
+    width:72px; height:72px; border-radius:50%;
+    background:rgba(255,255,255,.15); backdrop-filter:blur(8px);
+    border:2px solid rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto var(--spacing-16);
+    font-size:24px; color:#fff; cursor:pointer;
+    transition:all .2s;
+  }
+  .demo-spot-inner .play-icon:hover {
+    background:rgba(255,255,255,.25);
+    transform:scale(1.05);
+  }
+  .demo-spot-inner p {
+    font-family:var(--font-mono); font-size:11px;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:rgba(255,255,255,.5);
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align:center; padding:var(--spacing-56) 0;
+    border-top:1px solid var(--color-light-taupe);
+  }
+  footer p {
+    font-family:var(--font-mono); font-size:11px;
+    text-transform:uppercase; letter-spacing:.06em;
+    color:var(--color-muted-ash);
+  }
+  footer a { color:inherit; }
+
+  /* ── Animations ── */
+  .fade-in {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible {
+    opacity: 1; transform: translateY(0);
+  }
+  .num-animate {
+    display: inline-block;
+    transition: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width:800px) {
+    .hero h1 { font-size:36px; letter-spacing:-1.08px; }
+    .hero-stats { gap:var(--spacing-24); flex-wrap:wrap; }
+    .hero-stat .num { font-size:28px; }
+    .grid-2,.grid-3,.stats-grid { grid-template-columns:1fr; }
+    .arch-row { justify-content:flex-start; }
+    .container,nav .inner { padding-left:var(--spacing-20); padding-right:var(--spacing-20); }
+    section { padding:var(--spacing-56) 0; }
+    nav .links { display:none; }
+  }
+</style>
+
+<nav>
+  <div class="inner">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 32 32" style="flex-shrink:0"><rect width="32" height="32" rx="8" fill="#111111"/><path d="M8 24L14 8L16 12L12 24H8Z" fill="#ffffff"/><path d="M24 24L18 8L16 12L20 24H24Z" fill="#ffffff" fill-opacity="0.7"/><circle cx="16" cy="18" r="1.5" fill="#47d096"/></svg>
+      <span>Audra<span style="font-weight:400;color:var(--color-muted-ash);font-size:12px;margin-left:4px">未央</span></span>
+    </div>
+    <div class="links">
+      <a href="#how">工作原理</a>
+      <a href="#arch">系统架构</a>
+      <a href="#tech">技术细节</a>
+      <a href="#results">成果数据</a>
+    </div>
+    <a href="dashboard/" class="cta">进入仪表盘 →</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner container">
+    <div class="hero-badge"><span class="dot"></span> 全自动 · 每日运行</div>
+    <h1>只需设置一次<br>AI 替你<em>每天自动投递</em></h1>
+    <p>设定你的求职偏好后，系统自动扫描三平台、智能匹配打分、个性化打招呼、追踪转化。一个人搭建的全栈求职引擎，从搜索到面试全覆盖。</p>
+    <div class="hero-stats" id="heroStats">
+      <div class="hero-stat"><div class="num num-animate" id="heroTotalScan">—</div><div class="lbl">近30天扫描</div></div>
+      <div class="hero-stat"><div class="num num-animate" id="heroTotalApply">—</div><div class="lbl">近30天投递</div></div>
+      <div class="hero-stat"><div class="num num-animate" id="heroReadRate">—</div><div class="lbl">BOSS 已读率</div></div>
+      <div class="hero-stat"><div class="num num-animate" id="heroCost">—</div><div class="lbl">日均 API 成本</div></div>
+    </div>
+    <div class="hero-cta">
+      <a href="#how" class="btn-primary">了解工作原理</a>
+      <a href="dashboard/" class="btn-ghost">查看实时数据</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Problem / Solution ── -->
+<section id="how">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Why</div>
+      <h2>求职不应该靠刷招聘 App</h2>
+      <p>重复手动搜岗位、逐条判断是否匹配、手动编辑打招呼语、逐个点击投递<br>—— 这个流程 AI 可以做得更好、更快、不会漏。</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="icon">😤</div>
+        <h3>痛点</h3>
+        <p>每天打开三四个招聘 App，重复搜关键词，手动判断岗位是否匹配，编辑个性化话术。3 个平台 × 每天 2 次 = 巨大的时间黑洞。而且容易漏掉好岗位。</p>
+      </div>
+      <div class="card">
+        <div class="icon">🤖</div>
+        <h3>方案</h3>
+        <p>定时扫描三平台热搜关键词 → 按简历自动匹配打分 → 自动生成个性化打招呼话术 → 自动投递 → 数据追踪。你只需要看日报和准备面试。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Architecture ── -->
+<section id="arch" style="background:var(--color-whisper-gray)">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Architecture</div>
+      <h2>全自动化流水线</h2>
+      <p>基于 Hermes Agent 框架构建的 12 个 cron 任务协同系统</p>
+    </div>
+    <div class="arch-diagram">
+      <div class="arch-row">
+        <span class="arch-box plat">BOSS直聘</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box plat">猎聘</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box plat">智联招聘</span>
+      </div>
+      <div class="arch-row">
+        <span class="arch-box src">Firefox Cookie注入</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box src">Playwright 自动搜索</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box src">8关键词 × 7层过滤</span>
+      </div>
+      <div class="arch-row">
+        <span class="arch-box proc">JD详情提取</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box proc">LLM 综合匹配打分</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box proc">个性化话术生成</span>
+      </div>
+      <div class="arch-row">
+        <span class="arch-box out">自动打招呼</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box out">HR回复监控</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box out">自动发简历</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-box out">投递追踪Excel</span>
+      </div>
+      <div class="arch-row">
+        <span class="arch-box" style="background:var(--color-canvas-white);color:var(--color-midnight-ink);">Telegram 日报推送</span>
+        <span class="arch-arrow" style="color:rgba(255,255,255,.3)">+</span>
+        <span class="arch-box" style="background:var(--color-canvas-white);color:var(--color-midnight-ink);">实时数据大盘</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Core Capabilities ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Capabilities</div>
+      <h2>核心能力</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="icon">🔍</div>
+        <h3>智能扫描</h3>
+        <p>三平台 8 关键词定时搜索，Firefox Cookie 注入绕过验证码，7 层过滤规则自动筛掉不匹配岗位。</p>
+        <div class="tech-tags"><span class="tech-tag">Playwright</span><span class="tech-tag">Cookie注入</span><span class="tech-tag">PUA解码</span></div>
+      </div>
+      <div class="card">
+        <div class="icon">🧠</div>
+        <h3>LLM 匹配引擎</h3>
+        <p>简历摘要缓存命中 DeepSeek 缓存，所有岗位一次性送入 LLM 综合打分，精度一致，成本 ¥0.005/次。</p>
+        <div class="tech-tags"><span class="tech-tag">DeepSeek V4</span><span class="tech-tag">Prompt Cache</span><span class="tech-tag">0-10分</span></div>
+      </div>
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>自动投递</h3>
+        <p>按匹配分数排序自动打招呼，话术由 LLM 个性化生成，HR 回复后自动跟进发简历，全流程无人值守。</p>
+        <div class="tech-tags"><span class="tech-tag">账号权重保护</span><span class="tech-tag">错峰执行</span><span class="tech-tag">反爬策略</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Video / Demo ── -->
+<section style="background:var(--color-whisper-gray)">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Demo</div>
+      <h2>操作演示</h2>
+      <p>实时数据仪表盘使用演示 · 系统工作流程说明</p>
+    </div>
+    <div class="demo-spot" id="demoVideo">
+      <div class="demo-spot-inner">
+        <div class="play-icon" onclick="alert('演示视频待录制')">▶</div>
+        <p>系统演示 · 待录制</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Technical Details ── -->
+<section id="tech">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Deep Dive</div>
+      <h2>技术亮点</h2>
+      <p>点击展开查看详细技术选型与实现</p>
+    </div>
+    <div style="max-width:780px;margin:0 auto;">
+      <details class="tech-item">
+        <summary>双模型路由 · 成本优化</summary>
+        <div class="tech-body">
+          日常工作用 <code>deepseek-v4-flash</code> (¥1/百万 token)，复杂推理切 <code>deepseek-v4-pro</code> (¥12/百万 token)。简历摘要固化享受 <strong>DeepSeek Prompt Cache</strong> 命中 (¥0.1/次)，每天扫描三平台全量 LLM 成本 <strong>&lt;¥0.5</strong>。
+          <div class="tech-tags"><span class="tech-tag">DeepSeek</span><span class="tech-tag">Prompt Cache</span><span class="tech-tag">4重API Key冗余</span><span class="tech-tag">自愈Gateway</span></div>
+        </div>
+      </details>
+      <details class="tech-item">
+        <summary>Cookie 注入 · 免登录自动化</summary>
+        <div class="tech-body">
+          三平台统一方案：从 Firefox <code>cookies.sqlite</code> 读取登录态 Cookie，Playwright 注入后直接操作搜索和投递页面，<strong>完全绕过验证码</strong>。Cookie 过期时 Telegram 自动告警，手动扫码后 30 秒恢复运行。
+          <div class="tech-tags"><span class="tech-tag">Playwright</span><span class="tech-tag">Firefox</span><span class="tech-tag">SQLite</span><span class="tech-tag">Telegram告警</span></div>
+        </div>
+      </details>
+      <details class="tech-item">
+        <summary>Boss PUA 薪资解码</summary>
+        <div class="tech-body">
+          Boss 直聘使用 Private Use Area (U+E031-U+E03A) 编码薪资数字，防止机器抓取。通过 JavaScript 范围内解码 <code>decoded = char - 0xE031 + 0x30</code>，<strong>100% 还原真实薪资</strong>。比字典映射方案更健壮，不会丢字符。
+          <div class="tech-tags"><span class="tech-tag">Unicode PUA</span><span class="tech-tag">JS逆向</span><span class="tech-tag">薪资解码</span></div>
+        </div>
+      </details>
+      <details class="tech-item">
+        <summary>错峰反爬 · 账号权重保护</summary>
+        <div class="tech-body">
+          扫描、打招呼、监控三个 cron 任务分时段执行，每次间隔 5-10 秒。Boss 打招呼 <strong>单账号每日上限 20 个</strong>，超出自动暂停次日继续。猎聘分时段执行避免 IP 风控。三平台登录态独立维护，互不影响。
+          <div class="tech-tags"><span class="tech-tag">Cron分时</span><span class="tech-tag">速率限制</span><span class="tech-tag">权重保护</span></div>
+        </div>
+      </details>
+      <details class="tech-item">
+        <summary>Profile 自治架构</summary>
+        <div class="tech-body">
+          求职助手作为独立 Hermes Agent Profile 运行，<strong>完全隔离</strong>：独立的 SOUL.md、MEMORY.md、配置文件和 session 数据库。12 个 cron 任务通过 <code>workdir</code> 指向 profile 目录自动注入上下文，主 agent 零负担。
+          <div class="tech-tags"><span class="tech-tag">Hermes Profile</span><span class="tech-tag">Multi-Agent</span><span class="tech-tag">Cron自治</span><span class="tech-tag">SQLite隔离</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ── Live Stats ── -->
+<section id="results" style="background:var(--color-whisper-gray)">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Results</div>
+      <h2>成果数据</h2>
+      <p>实时数据来自 job-assistant profile</p>
+    </div>
+    <div class="stats-grid" id="liveStats">
+      <div class="stat-card"><div class="num num-animate" id="liveScan">—</div><div class="lbl">扫描总次数</div></div>
+      <div class="stat-card"><div class="num num-animate" id="liveApply">—</div><div class="lbl">累计打招呼</div></div>
+      <div class="stat-card"><div class="num num-animate" id="liveResume">—</div><div class="lbl">已发简历</div></div>
+      <div class="stat-card"><div class="num num-animate" id="liveInterview">—</div><div class="lbl">面试邀约</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="container">
+    <p>Built with <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> · 12 cron jobs · ¥12/month API cost · <a href="dashboard/">Dashboard →</a></p>
+  </div>
+</footer>
+
+<script>
+// ── Config ──
+const API_BASE = (() => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return '';
+  }
+  return window.location.pathname.startsWith('/job/') ? '/job' : '';
+})();
+
+async function loadLiveData() {
+  try {
+    const res = await fetch(`${API_BASE}/api/stats`);
+    if (!res.ok) return;
+    const d = await res.json();
+
+    const pB = d.platforms?.boss?.statuses || {};
+    const pL = d.platforms?.liepin?.statuses || {};
+    const pZ = d.platforms?.zhilian?.statuses || {};
+    const totalScan = (d.dashboard?.['扫描总次数']?.total || 0);
+    const totalApply = (pB['已打招呼']||0)+(pB['已发简历']||0)
+                     + (pL['已打招呼']||0)+(pL['已发简历']||0)
+                     + (pZ['已打招呼']||0)+(pZ['已发简历']||0);
+    const bossGreeted = pB['已打招呼'] || 0;
+    const bossRead = pB['已读'] || 0;
+    const readRate = Math.round(bossRead / Math.max(bossGreeted, 1) * 100);
+    const totalResume = (pB['已发简历'] || 0)+(pL['已发简历'] || 0)+(pZ['已发简历'] || 0);
+    const totalInterview = (pB['面试邀约'] || 0)+(pB['面试中'] || 0);
+
+    // 数字跳动
+    animateNumber('heroTotalScan', totalScan);
+    animateNumber('heroTotalApply', totalApply);
+    animateNumber('heroReadRate', readRate, '%');
+    animateNumber('heroCost', 0.5, '', true);
+    animateNumber('liveScan', totalScan);
+    animateNumber('liveApply', totalApply);
+    animateNumber('liveResume', totalResume);
+    animateNumber('liveInterview', totalInterview);
+  } catch(e) {}
+}
+
+function animateNumber(id, target, suffix = '', prefix = false) {
+  const el = document.getElementById(id);
+  if (!el || target === undefined) return;
+  const duration = 1200;
+  const start = performance.now();
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const current = prefix
+      ? (target < 1 ? `<¥${(eased * target).toFixed(1)}` : `<¥${Math.round(eased * target)}`)
+      : (suffix ? `${Math.round(eased * target)}${suffix}` : `${Math.round(eased * target)}`);
+    el.textContent = current;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// 滚动渐入
+function initScrollFade() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('section, .card, .hero-stats, .stats-grid').forEach(el => {
+    el.classList.add('fade-in');
+    observer.observe(el);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadLiveData();
+  initScrollFade();
+});
+</script>
+</html>

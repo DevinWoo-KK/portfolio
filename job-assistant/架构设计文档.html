@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 求职 Agent — 架构设计文档</title>
+<style>
+  :root {
+    --bg:        #faf9f5;
+    --text:      #141413;
+    --muted:     #b0aea5;
+    --card:      #f0eee6;
+    --card-deep: #e3dacc;
+    --card-light:#e8e6dc;
+    --dark:      #141413;
+    --accent:    #d97757;
+    --blue:      #6a9bcc;
+    --olive:     #788c5d;
+    --radius:    8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+    line-height: 1.8;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 32px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--dark);
+    color: #fff;
+    padding: 56px 48px;
+    border-radius: var(--radius);
+    margin-bottom: 72px;
+  }
+  .hero h1 {
+    font-family: 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+    font-size: 2em;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .hero .subtitle {
+    font-size: 1em;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ── Sections ── */
+  section { margin-bottom: 64px; }
+  section h2 {
+    font-family: 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+    font-size: 1.4em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  section h3 {
+    font-size: 0.95em;
+    font-weight: 600;
+    margin: 28px 0 10px;
+    color: var(--text);
+  }
+  section h4 {
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  p { margin-bottom: 12px; font-size: 0.93em; }
+  p.muted { color: var(--muted); font-size: 0.85em; }
+
+  /* ── Code blocks ── */
+  .code-block {
+    background: var(--card-light);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 16px 0;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+    letter-spacing: -0.01em;
+  }
+  .code-block .c1 { color: var(--muted); }
+  .code-block .kw { color: var(--olive); }
+  .code-block .s  { color: var(--blue); }
+  .code-block .n  { color: var(--text); }
+  .code-block .nb { color: var(--text); }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.88em;
+  }
+  th {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 400;
+    text-align: left;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--card-deep);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--card-light);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Tag / badge ── */
+  .tag {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* ── Highlight box ── */
+  .callout {
+    background: var(--card-deep);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 0.88em;
+    line-height: 1.6;
+  }
+  .callout strong { font-weight: 600; }
+
+  /* ── Decision tree ── */
+  .decision-tree {
+    background: var(--card-light);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 16px 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Two-column card grid ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .card h4 {
+    font-size: 0.9em;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .card p {
+    font-size: 0.85em;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Accent link (appears exactly once per page) ── */
+  .accent-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--card-deep);
+    text-align: center;
+  }
+  footer p {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 2;
+    margin: 0;
+  }
+
+  ul { margin: 8px 0 8px 20px; }
+  ul li { font-size: 0.9em; color: var(--text); margin-bottom: 4px; }
+
+  @media (max-width: 700px) {
+    body { padding: 40px 20px; }
+    .hero { padding: 40px 28px; }
+    .hero h1 { font-size: 1.5em; }
+    .two-col { grid-template-columns: 1fr; }
+    table { font-size: 0.78em; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+
+<div class="hero">
+  <h1>AI 求职 Agent — 架构设计</h1>
+  <p class="subtitle">三平台适配 · 评分算法 · 成本优化 · 反爬策略</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 1. 系统全景 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section>
+  <h2>1. 系统全景</h2>
+
+  <h3>1.1 整体架构</h3>
+  <div class="decision-tree">
+┌──────────────────────────────────────────────────────────────┐
+│                      Cron 调度层                              │
+│  08:00 Cookie检查 → 09:00 BOSS扫描 → 09:05 JD补全            │
+│  09:15 打招呼 → 10:00 猎聘扫描 → 10:15 投递                  │
+│  11:00 智联扫描 → 11:15 投递 → 10-18 回复监控(2h轮询)        │
+│  17:30 EOD日报                                                │
+└──────────────────────┬───────────────────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    Hermes Agent Runtime                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │ Brain L1 │  │ 双层记忆 │  │ Session  │  │ 编排层   │    │
+│  │ 智能路由 │  │ Memory + │  │ Search   │  │ 子Agent  │    │
+│  │ 6层管线  │  │Hindsight │  │ RAG检索  │  │ 9角色    │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
+└──────────────────────┬───────────────────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│                     平台适配层                                │
+│  ┌───────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │   BOSS直聘    │  │    猎聘      │  │  智联招聘    │      │
+│  │ Playwright FF │  │ Playwright FF│  │ Playwright FF│      │
+│  │ PUA薪资解码   │  │ 3步投递流    │  │ 2步投递流    │      │
+│  │ Cookie注入    │  │ Cookie注入   │  │ Cookie注入   │      │
+│  └───────┬───────┘  └──────┬───────┘  └──────┬───────┘      │
+│          └──────────────────┼──────────────────┘              │
+│                             ▼                                 │
+│  ┌──────────────────────────────────────────────┐            │
+│  │           统一过滤引擎 (6层规则)              │            │
+│  │  ①薪资 ②经验 ③学历 ④黑名单 ⑤避开词 ⑥区域  │            │
+│  └──────────────────────────────────────────────┘            │
+└──────────────────────┬───────────────────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│                       AI 评分层                               │
+│  ┌──────────────────────────────────────────────┐            │
+│  │  DeepSeek V4 Flash · 双维度评分              │            │
+│  │  硬匹配(Agent/LLM/RAG/Prompt)                │            │
+│  │  + 人类视角(薪资/公司/行业/加班)             │            │
+│  │  → 1–10分 + 理由 + 打招呼话术                │            │
+│  └──────────────────────────────────────────────┘            │
+└──────────────────────┬───────────────────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│                     输出 & 追踪层                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │打招呼    │  │发简历    │  │Excel三    │  │Telegram  │    │
+│  │自动化    │  │自动化    │  │子表追踪  │  │日报推送  │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>1.2 技术栈</h3>
+  <table>
+    <tr><th>层级</th><th>技术选型</th><th>说明</th></tr>
+    <tr><td>Agent 框架</td><td>Hermes Agent (自建)</td><td>六层智能路由 + 18 Cron 任务编排 + 双层记忆</td></tr>
+    <tr><td>LLM 主模型</td><td>DeepSeek V4 Flash</td><td>高频评分任务 (¥1 / ¥2 per M tokens)</td></tr>
+    <tr><td>LLM 复杂推理</td><td>DeepSeek V4 Pro</td><td>仅在复杂推理场景使用，其余全部 Flash</td></tr>
+    <tr><td>浏览器自动化</td><td>Playwright (Firefox)</td><td>真实浏览器指纹 + cookies.sqlite 注入</td></tr>
+    <tr><td>数据存储</td><td>JSON + Excel (openpyxl)</td><td>无数据库依赖，Excel 为唯一可信追踪源</td></tr>
+    <tr><td>消息推送</td><td>Telegram Bot API</td><td>日报、告警、Cookie 失效通知</td></tr>
+    <tr><td>定时调度</td><td>Hermes Cron</td><td>18 个 Cron 任务，支持链式依赖和状态传递</td></tr>
+    <tr><td>运行环境</td><td>WSL2 Ubuntu + Windows 11</td><td>Firefox 在 Windows 侧，脚本桥接调用</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 2. 三平台差异处理 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section>
+  <h2>2. 三平台差异处理</h2>
+
+  <p>BOSS直聘、猎聘、智联招聘在登录机制、页面结构、薪资编码、投递流程上存在显著差异。本系统通过 <strong>统一过滤引擎 + 平台适配脚本</strong> 两层架构来处理——80% 的过滤和评分逻辑共享，20% 的平台差异在独立脚本中处理。</p>
+
+  <h3>2.1 差异矩阵</h3>
+  <table>
+    <tr><th>维度</th><th>BOSS直聘</th><th>猎聘</th><th>智联招聘</th></tr>
+    <tr>
+      <td>运行脚本</td>
+      <td><span class="tag">boss_scan_cron.py</span></td>
+      <td><span class="tag">liepin_scan.py</span></td>
+      <td><span class="tag">zhilian_scan.py</span></td>
+    </tr>
+    <tr>
+      <td>搜索页数</td>
+      <td>单页 (~20 条)</td>
+      <td>单页 (~40 条)</td>
+      <td>3 页 (p1–p3, ~45 条)</td>
+    </tr>
+    <tr>
+      <td>薪资编码</td>
+      <td>PUA 字体混淆</td>
+      <td>纯文本 (年薪/月薪)</td>
+      <td>混合 (万 / K / 元 / 面议)</td>
+    </tr>
+    <tr>
+      <td>登录方式</td>
+      <td>Firefox Cookie 注入</td>
+      <td>无需登录即可搜索</td>
+      <td>Firefox Cookie 注入</td>
+    </tr>
+    <tr>
+      <td>反爬强度</td>
+      <td>高 — headless 全拦截</td>
+      <td>低 — 无登录可搜</td>
+      <td>中 — 必须登录搜索</td>
+    </tr>
+    <tr>
+      <td>投递步骤</td>
+      <td>立即沟通 → 填话术 → 发送</td>
+      <td>聊一聊 → 发简历 → 弹窗确认</td>
+      <td>立即投递 → 弹窗确认</td>
+    </tr>
+    <tr>
+      <td>关键陷阱</td>
+      <td>账号权重保护 (≤150/天)</td>
+      <td>漏最后一步确认 = 假成功</td>
+      <td>漏弹窗确认 = 假成功</td>
+    </tr>
+  </table>
+
+  <h3>2.2 BOSS PUA 薪资解码</h3>
+  <p>BOSS直聘使用自定义字体将薪资数字编码为 Unicode Private Use Area (U+E031–U+E03A) 字符，直接读取 DOM 会得到乱码。解码原理：PUA 码点线性映射回 ASCII 数字。</p>
+
+  <div class="code-block">
+<span class="c1">// BOSS 薪资 PUA 解码算法 — 范围检查而非字典映射，更健壮</span>
+<span class="kw">function</span> <span class="nb">decodePUA</span>(<span class="n">s</span>) {
+  <span class="kw">if</span> (<span class="n">!</span><span class="n">s</span>) <span class="kw">return</span> <span class="s">''</span>;
+  <span class="kw">let</span> <span class="n">r</span> = <span class="s">''</span>;
+  <span class="kw">for</span> (<span class="kw">let</span> <span class="n">c</span> <span class="kw">of</span> <span class="n">s</span>) {
+    <span class="kw">let</span> <span class="n">code</span> = <span class="n">c</span>.<span class="nb">charCodeAt</span>(<span class="nb">0</span>);
+    <span class="c1">// U+E031 → '1', U+E032 → '2', ... U+E03A → ':'</span>
+    <span class="kw">if</span> (<span class="n">code</span> >= <span class="nb">0xe031</span> && <span class="n">code</span> <= <span class="nb">0xe03a</span>)
+      <span class="n">r</span> += <span class="nb">String</span>.<span class="nb">fromCharCode</span>(<span class="nb">0x30</span> + (<span class="n">code</span> - <span class="nb">0xe031</span>));
+    <span class="kw">else</span>
+      <span class="n">r</span> += <span class="n">c</span>;  <span class="c1">// 保留 K、·、-、元、万、薪 等非 PUA 字符</span>
+  }
+  <span class="kw">return</span> <span class="n">r</span>;
+}
+<span class="c1">// "K-K" → "15K-25K"</span>
+  </div>
+
+  <p>与常见的字典映射方案不同，本算法利用 PUA 码点恰好按序排列的特性做线性偏移，<strong>不遗漏字符、不需要维护映射表</strong>。</p>
+
+  <h3>2.3 Cookie 注入</h3>
+  <p>三平台均采用 <strong>Firefox cookies.sqlite → Playwright context</strong> 注入模式，避免密码登录触发验证码：</p>
+
+  <div class="code-block">
+<span class="c1"># 核心流程</span>
+<span class="nb">1</span>. 读取 Firefox Profile:
+   /mnt/c/Users/Devin/.../Profiles/0owekiqg.default-release/cookies.sqlite
+
+<span class="nb">2</span>. sqlite3 提取目标域名 Cookie:
+   BOSS:  .zhipin.com
+   猎聘:  .liepin.com
+   智联:  .zhaopin.com, passport.zhaopin.com
+
+<span class="nb">3</span>. Playwright browser_context.add_cookies(cookies)
+
+<span class="nb">4</span>. 验证: 导航搜索页 → 检查用户名/头像元素是否存在
+  </div>
+
+  <div class="callout">
+    <strong>设计决策：为什么不用 Camoufox？</strong><br>
+    Camoufox 依赖的 <span class="tag">camouflage</span> 模块在当前 WSL 环境未安装且安装复杂。Playwright Firefox + Cookie 注入同样能绕过反爬检测——使用用户真实浏览器 Profile，User-Agent、Cookie、LocalStorage 均为真实数据，维护成本更低。
+  </div>
+
+  <h3>2.4 投递流程陷阱</h3>
+  <p>多步投递流程中，<strong>漏掉最后一步确认弹窗是最常见的静默失败</strong>——页面刷新后无任何错误提示，但投递实际未完成：</p>
+
+  <table>
+    <tr><th>平台</th><th>步骤</th><th>关键陷阱</th></tr>
+    <tr>
+      <td rowspan="3">猎聘</td>
+      <td>Step 1 — 点击"聊一聊"</td>
+      <td>3 种"聊一聊"按钮，仅 2 种可见。必须加 <span class="tag">:not(.ant-btn)</span> 排除隐藏的 Ant Design 按钮</td>
+    </tr>
+    <tr><td>Step 2 — 点击"发简历"</td><td>需等待弹窗渲染完成</td></tr>
+    <tr><td>Step 3 — 确认弹窗</td><td>此步缺失 → 假投递，无声失败</td></tr>
+    <tr>
+      <td rowspan="2">智联</td>
+      <td>Step 1 — 点击"立即投递"</td>
+      <td>React 渲染，<span class="tag">evaluate.click()</span> 无效，必须用 <span class="tag">get_by_text().click()</span></td>
+    </tr>
+    <tr><td>Step 2 — 确认弹窗</td><td>此步缺失 → 假投递，无声失败</td></tr>
+  </table>
+
+  <h3>2.5 反爬策略</h3>
+  <div class="two-col">
+    <div class="card">
+      <h4>错峰执行</h4>
+      <p>三平台串行执行，15 分钟间隔：BOSS 09:00 → 猎聘 10:00 → 智联 11:00。避免并发触发限流。</p>
+    </div>
+    <div class="card">
+      <h4>随机间隔</h4>
+      <p>页面操作间插入 3–8 秒随机延迟；JD 详情页抓取间隔 3–5 秒。避免固定节奏被识别为脚本。</p>
+    </div>
+    <div class="card">
+      <h4>验证码检测</h4>
+      <p>每次关键操作后通过 browser_console 主动检测 CAPTCHA 关键词。触发时暂停 30 秒重试一次，仍失败则 Telegram 告警。</p>
+    </div>
+    <div class="card">
+      <h4>真实浏览器指纹</h4>
+      <p>使用用户实际使用的 Firefox Profile，User-Agent、Cookie、LocalStorage 均为真实数据，对抗 headless 检测。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 3. 评分算法 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section>
+  <h2>3. 评分算法设计</h2>
+
+  <h3>3.1 六层规则过滤</h3>
+  <p>在 LLM 评分之前，用零成本的规则引擎过滤明确不匹配的岗位，<strong>减少 LLM Token 消耗</strong>：</p>
+
+  <table>
+    <tr><th>层</th><th>过滤项</th><th>条件</th><th>备注</th></tr>
+    <tr><td>1</td><td>薪资</td><td>下限 &lt; 12K 或上限 &gt; 80K</td><td>面议薪资跳过检查</td></tr>
+    <tr><td>2</td><td>经验</td><td>5 年以上 / 5–10 年 / 10 年以上</td><td>应届、不限、1–3 年、3–5 年保留</td></tr>
+    <tr><td>3</td><td>学历</td><td>仅含大专 / 中专 / 高中 (无本科或硕士)</td><td>学历不限豁免</td></tr>
+    <tr><td>4</td><td>避开词</td><td>外包 / 996 / 销售 / 客户经理</td><td>title + company 双字段检测</td></tr>
+    <tr><td>5</td><td>AI 方向</td><td>不含 AI / Agent / 大模型 / AIGC / 人工智能 / AGI / 智能体 / LLM / 产品</td><td>"产品"引入非 AI 岗，由 LLM 二次排除</td></tr>
+    <tr><td>6</td><td>区域</td><td>不在广州五区 (天河 / 海珠 / 黄埔 / 越秀 / 荔湾)</td><td>排除南沙、白云、番禺等 6 区</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>薪资单位陷阱（已修复）</strong><br>
+    猎聘和智联的薪资可能是"万/年"、"K/月"、"元/月"混合格式。早期使用 <span class="tag">max(数字列表)</span> 做比较导致跨单位误杀——180,000 元/年 (15K/月) 会被 80K 上限错误过滤。修复方案：统一换算到「K/月」后再比较下限。
+  </div>
+
+  <h3>3.2 双维度 LLM 评分</h3>
+  <p>传统关键词匹配的根本缺陷：无法区分"真的匹配"和"看起来匹配"。本系统采用双维度评分：</p>
+
+  <table>
+    <tr><th>维度</th><th>评估内容</th><th>示例</th></tr>
+    <tr>
+      <td><strong>硬匹配</strong></td>
+      <td>
+        Agent / 智能体 / 大模型 / LLM 关键词命中<br>
+        RAG / 知识库 / Prompt 工程技能对齐<br>
+        经验年限、学历专业匹配度
+      </td>
+      <td style="font-size:0.85em">
+        Agent 方向精准 + 2 年经验对口 → 9 分<br>
+        关键词全中但要求 5 年+ → 扣分
+      </td>
+    </tr>
+    <tr>
+      <td><strong>人类视角</strong></td>
+      <td>
+        薪资范围合理性<br>
+        公司融资阶段与规模<br>
+        行业是否为 AI 核心业务<br>
+        外包嫌疑检测<br>
+        加班信号识别<br>
+        岗位真实性判断
+      </td>
+      <td style="font-size:0.85em">
+        20–40K 大厂 → 加分<br>
+        &lt;20 人未融资 + 15K 标"高级" → 扣分<br>
+        房地产公司招 AI PM → 非核心业务
+      </td>
+    </tr>
+  </table>
+
+  <h3>3.3 一次性综合评分流程</h3>
+  <p>不再分两步（先标题匹配 → 再看 JD），而是<strong>先批量提取所有岗位 JD，再一次性送入 LLM 综合打分</strong>：</p>
+
+  <div class="decision-tree">
+Phase A — 扫描 + JD 提取
+  ┌──────────────────────────────────────────┐
+  │ 1. 搜索 8 个 AI 关键词                    │
+  │ 2. 提取岗位卡片 → 6 层规则过滤            │
+  │ 3. 逐条打开详情页，提取完整 JD 正文       │
+  │ 4. 产出 jobs_{date}_raw.json             │
+  └──────────────────────────────────────────┘
+                    ↓
+Phase B — LLM 综合评分 (一次性批处理)
+  ┌──────────────────────────────────────────┐
+  │ Prompt = 简历摘要 + 所有岗位 JD 列表      │
+  │           ^^^^^^^^^^^^^^^^                │
+  │           固化 → DeepSeek Cache Hit       │
+  │                                          │
+  │ 输出: [{                                 │
+  │   match_score: 1–10,                     │
+  │   match_reason: "硬匹配 + 人类视角",      │
+  │   jd_summary: "岗位实际做什么",           │
+  │   greeting_hint: "个性化打招呼语"         │
+  │ }]                                       │
+  └──────────────────────────────────────────┘
+  </div>
+
+  <h3>3.4 评分分层与执行策略</h3>
+  <table>
+    <tr><th>分数</th><th>优先级</th><th>动作</th><th>占比</th></tr>
+    <tr><td>9–10</td><td>必投</td><td>方向完全对口 + 经验直接覆盖 → 立即打招呼</td><td>~8%</td></tr>
+    <tr><td>7–8</td><td>优先投</td><td>有明显交叉点，弱项可通过话术化解</td><td>~34%</td></tr>
+    <tr><td>5–6</td><td>补位投</td><td>部分匹配但经验或方向有差距</td><td>~33%</td></tr>
+    <tr><td>1–4</td><td>跳过</td><td>保留在 JSON 和 Excel 中供查看，不投递</td><td>~25%</td></tr>
+  </table>
+
+  <p>打招呼时按分数降序逐一执行，<strong>同公司间隔 ≥5 个岗位</strong>，保护 BOSS 账号权重不被降权。日上限 150 岗。</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 4. 成本优化 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section>
+  <h2>4. 成本优化策略</h2>
+
+  <h3>4.1 成本全景</h3>
+  <table>
+    <tr><th>操作</th><th>模型</th><th>单价 (in / out per M)</th><th>频次</th><th>日成本</th></tr>
+    <tr><td>BOSS 评分 (~23 岗)</td><td>Flash</td><td>¥1.00 / ¥2.00</td><td>1×/天</td><td>~¥0.05</td></tr>
+    <tr><td>猎聘评分 (~61 岗)</td><td>Flash</td><td>¥1.00 / ¥2.00</td><td>1×/天</td><td>~¥0.10</td></tr>
+    <tr><td>智联评分 (~40 岗)</td><td>Flash</td><td>¥1.00 / ¥2.00</td><td>1×/天</td><td>~¥0.07</td></tr>
+    <tr><td>EOD 日报生成</td><td>Flash</td><td>¥1.00 / ¥2.00</td><td>1×/天</td><td>~¥0.02</td></tr>
+    <tr><td>回复监控 (5 轮)</td><td>Flash</td><td>¥1.00 / ¥2.00</td><td>5×/天</td><td>~¥0.05</td></tr>
+    <tr><td>打招呼执行</td><td>Flash</td><td>¥1.00 / ¥2.00</td><td>1×/天</td><td>~¥0.03</td></tr>
+    <tr><td colspan="3"><strong>求职模块日均合计</strong></td><td></td><td><strong>~¥0.32</strong></td></tr>
+    <tr><td>其他辅助 (搜索/压缩等)</td><td>Flash + Qwen</td><td>—</td><td>—</td><td>~¥0.10</td></tr>
+    <tr><td colspan="3"><strong>全系统日均总计</strong></td><td></td><td><strong>≈ ¥0.42</strong></td></tr>
+  </table>
+
+  <h3>4.2 Prompt Cache 策略</h3>
+  <p>这是成本优化的<strong>核心手段</strong>。DeepSeek 对 Prompt Cache 命中部分仅收 ¥0.10/百万 token（原价的 1/10–1/20）。</p>
+
+  <div class="callout">
+    <strong>方法</strong><br>
+    将求职者简历摘要固化在每次 LLM 评分的 Prompt 最前面。三次评分 (BOSS / 猎聘 / 智联) 共享同一份简历前缀 → <strong>简历段每轮 Cache Hit，仅岗位 JD 部分计费</strong>。<br><br>
+
+    <strong>计算</strong><br>
+    简历 2K tokens + 100 岗 × 300 tokens JD = 32K tokens 总量<br>
+    无 Cache: 32K × ¥1.5/百万 (均价) = ¥0.048<br>
+    有 Cache: 简历 ¥0.0002 (Cache 价) + 30K JD × ¥1.5/百万 = ¥0.0452<br>
+    <strong>简历部分省 99%，总体几乎无额外开销。</strong>
+  </div>
+
+  <h3>4.3 Flash 模型选型</h3>
+  <p>评分和监控任务不需要强推理能力——岗位匹配本质是语义相似度判断，Flash 完全胜任：</p>
+
+  <table>
+    <tr><th>任务</th><th>用 Pro</th><th>用 Flash</th><th>节省</th></tr>
+    <tr><td>岗位评分</td><td>¥4.50 / 百万</td><td>¥1.50 / 百万</td><td>67%</td></tr>
+    <tr><td>日报生成</td><td>¥4.50 / 百万</td><td>¥1.50 / 百万</td><td>67%</td></tr>
+    <tr><td>回复意图判断</td><td>¥4.50 / 百万</td><td>¥1.50 / 百万</td><td>67%</td></tr>
+  </table>
+
+  <h3>4.4 其他省钱手段</h3>
+  <div class="two-col">
+    <div class="card">
+      <h4>免费规则前置</h4>
+      <p>6 层规则过滤全部在 Python 中完成（零 API 调用），过滤掉 40–60% 的岗位后才送 LLM。猎聘日均抓取 ~100 条，过滤后仅 ~60 条进入评分。</p>
+    </div>
+    <div class="card">
+      <h4>批处理合并</h4>
+      <p>所有岗位收集完 JD 后合并为一次 LLM 调用，而非逐条调用。100 个岗位逐条调用 = 100 次 API 往返 + 100 次简历计费；合批后仅 1 次。</p>
+    </div>
+    <div class="card">
+      <h4>no_agent Cron</h4>
+      <p>Cookie 健康检查、日志清理等纯脚本任务使用 <span class="tag">no_agent=true</span> 模式，完全不消耗 LLM Token。</p>
+    </div>
+    <div class="card">
+      <h4>仅工作日运行</h4>
+      <p>所有求职 Cron 任务仅在周一至周五执行，周末大多数公司不发布新岗位。月省约 8 天费用。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 5. 风险与边界 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section>
+  <h2>5. 风险与边界</h2>
+
+  <h3>5.1 已知风险与缓解</h3>
+  <table>
+    <tr><th>风险</th><th>影响</th><th>缓解措施</th></tr>
+    <tr>
+      <td>BOSS 账号降权</td>
+      <td>打招呼频率过高被限制</td>
+      <td>同公司间隔 ≥5 岗；日上限 150 岗；仅投 ≥7 分</td>
+    </tr>
+    <tr>
+      <td>Cookie 过期</td>
+      <td>扫描 / 投递全部失败</td>
+      <td>每 2h 健康检查；08:00 预检；Telegram 即时告警</td>
+    </tr>
+    <tr>
+      <td>验证码升级</td>
+      <td>猎聘新增验证码类型</td>
+      <td>主动检测 CAPTCHA 关键词；失败后 Telegram 通知手动介入</td>
+    </tr>
+    <tr>
+      <td>DeepSeek 优惠到期</td>
+      <td>Pro 模型费用 ×4</td>
+      <td>Flash 已覆盖 90% 评分任务；Pro 仅留复杂推理</td>
+    </tr>
+    <tr>
+      <td>DOM 结构变更</td>
+      <td>选择器失效</td>
+      <td>独立脚本隔离影响；browser_console 注入 JS 提取更健壮</td>
+    </tr>
+  </table>
+
+  <h3>5.2 设计边界</h3>
+  <ul>
+    <li>本系统是<strong>辅助决策工具</strong>，不替代求职者的最终判断。</li>
+    <li>LLM 评分存在主观性，5–7 分段可能有偏差，已通过双维度评分降低误判。</li>
+    <li>不自动完成"线下面试预约""薪资谈判"等需要人工判断的环节。</li>
+    <li>不处理需要企业 ERP / ATS 系统对接的流程。</li>
+    <li>不适用于海外招聘平台 (LinkedIn / Indeed)，当前仅覆盖国内三大平台。</li>
+  </ul>
+
+  <h3>5.3 扩展方向</h3>
+  <div class="two-col">
+    <div class="card">
+      <h4>A/B 话术测试</h4>
+      <p>不同打招呼话术的效果对比，CTR 优化，强化学习自动选出最优话术模板。</p>
+    </div>
+    <div class="card">
+      <h4>面试复盘</h4>
+      <p>面试记录结构化 → LLM 分析失分点 → 自动生成改进建议和模拟面试题。</p>
+    </div>
+    <div class="card">
+      <h4>Offer 对比分析</h4>
+      <p>多维度量化分析（薪资 / 成长性 / WLB / 稳定性），辅助 offer 选择决策。</p>
+    </div>
+    <div class="card">
+      <h4>平台扩展</h4>
+      <p>拉勾网、前程无忧、<span class="accent-link">LinkedIn</span>，架构已预留平台适配接口。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Built on Hermes Agent · Playwright · DeepSeek V4 · 18 Cron Jobs</p>
+  <p style="margin-top:4px;">2026-05-15 · 吴东蔚 (Devin)</p>
+</footer>
+</html>

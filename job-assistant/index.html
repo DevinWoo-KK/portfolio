@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audra 求职助手 — AI 全自动求职系统</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23111111'/><path d='M8 24L14 8L16 12L12 24H8Z' fill='%23fff'/><path d='M24 24L18 8L16 12L20 24H24Z' fill='%23fff' fill-opacity='.7'/><circle cx='16' cy='18' r='1.5' fill='%2347d096'/></svg>">
+<style>
+:root {
+  --bg: #0a0a0b;
+  --surface: #131316;
+  --surface2: #1a1a1f;
+  --border: #25252b;
+  --text: #e4e4e7;
+  --text2: #a1a1aa;
+  --text3: #6b6b75;
+  --accent: #3b82f6;
+  --green: #22c55e;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --gradient-1: radial-gradient(ellipse 80% 60% at 20% 20%, rgba(59,130,246,.15) 0%, transparent 60%);
+  --gradient-2: radial-gradient(ellipse 70% 70% at 80% 70%, rgba(34,197,94,.08) 0%, transparent 55%);
+  --font: -apple-system,BlinkMacSystemFont,'Inter','SF Pro','Noto Sans SC',sans-serif;
+  --mono: 'SF Mono','Fira Code','JetBrains Mono',monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  -webkit-font-smoothing:antialiased;line-height:1.6;
+  min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:var(--gradient-1),var(--gradient-2);
+}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* Nav */
+nav{
+  position:fixed;top:0;z-index:100;width:100%;
+  background:rgba(10,10,11,.85);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+nav .inner{
+  max-width:1200px;margin:0 auto;display:flex;align-items:center;
+  height:52px;padding:0 24px;gap:28px;
+}
+nav .brand{font-size:15px;font-weight:600;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+nav .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:dotPulse 2s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+nav .links{display:flex;gap:2px;margin-left:auto}
+nav .links a{
+  padding:6px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;
+  color:var(--text2);text-decoration:none;transition:all .2s;
+}
+nav .links a:hover{color:var(--text);background:var(--surface2)}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;position:relative}
+.hero .badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;
+  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--green);
+  margin-bottom:24px;
+}
+.hero .badge .live{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.hero h1{font-size:52px;font-weight:700;letter-spacing:-1.5px;line-height:1.15;margin-bottom:16px}
+.hero h1 span{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{font-size:17px;color:var(--text2);max-width:540px;margin:0 auto 32px;line-height:1.6}
+.hero .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{
+  padding:10px 22px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;
+  text-decoration:none;transition:all .2s;cursor:pointer;border:none;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#2563eb;transform:translateY(-1px);box-shadow:0 8px 24px rgba(59,130,246,.25)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--text3)}
+
+/* Stats bar */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border);border-radius:var(--radius);overflow:hidden;
+  margin:-20px 0 80px;position:relative;z-index:2;
+}
+.stat-item{
+  background:var(--surface);padding:20px 24px;text-align:center;
+  transition:background .2s;
+}
+.stat-item:hover{background:var(--surface2)}
+.stat-item .number{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:4px}
+.stat-item .number.green{color:var(--green)}
+.stat-item .number.blue{color:var(--accent)}
+.stat-item .label{font-size:13px;color:var(--text3);font-weight:500}
+
+/* Section */
+section{padding:80px 0}
+.section-label{
+  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--accent);margin-bottom:12px;
+}
+.section-title{font-size:32px;font-weight:700;letter-spacing:-.8px;margin-bottom:12px}
+.section-desc{font-size:15px;color:var(--text2);max-width:560px;margin-bottom:48px;line-height:1.7}
+
+/* Features grid */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;transition:all .25s;
+}
+.feature-card:hover{background:var(--surface2);border-color:var(--text3);transform:translateY(-2px)}
+.feature-card .icon{font-size:24px;margin-bottom:14px}
+.feature-card h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feature-card p{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* Platform cards */
+.platform-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.platform-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;transition:all .25s;
+}
+.platform-card:hover{background:var(--surface2)}
+.platform-card .plat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.platform-card .plat-name{font-size:14px;font-weight:600}
+.platform-card .plat-status{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500}
+.platform-card .plat-status.active{background:rgba(34,197,94,.1);color:var(--green)}
+.platform-card .plat-meta{display:flex;gap:24px;margin-bottom:12px}
+.platform-card .meta-item .meta-num{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.platform-card .meta-item .meta-label{font-size:11px;color:var(--text3);margin-top:2px}
+.platform-card .plat-date{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.platform-card .plat-date::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--text3)}
+
+/* Job list */
+.job-list{display:flex;flex-direction:column;gap:8px}
+.job-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px 18px;display:flex;align-items:center;gap:16px;transition:all .2s;
+}
+.job-item:hover{background:var(--surface2)}
+.job-item .score{
+  width:38px;height:38px;border-radius:var(--radius-sm);display:flex;
+  align-items:center;justify-content:center;font-size:15px;font-weight:700;
+  flex-shrink:0;
+}
+.job-item .score.high{background:rgba(34,197,94,.15);color:var(--green)}
+.job-item .score.mid{background:rgba(59,130,246,.15);color:var(--accent)}
+.job-item .job-info{flex:1;min-width:0}
+.job-item .job-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-item .job-company{font-size:12px;color:var(--text3);margin-top:2px}
+.job-item .job-salary{font-size:13px;font-weight:600;color:var(--green);flex-shrink:0}
+.job-item .job-platform{font-size:11px;color:var(--text3);flex-shrink:0;padding:3px 8px;background:var(--surface2);border-radius:4px}
+
+/* Architecture */
+.arch-diagram{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:32px;
+}
+.arch-layer{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;text-align:center;transition:all .25s;
+}
+.arch-layer:hover{background:var(--surface2)}
+.arch-layer .layer-num{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px}
+.arch-layer .layer-name{font-size:14px;font-weight:600;margin-bottom:8px}
+.arch-layer .layer-items{font-size:11px;color:var(--text3);line-height:1.7}
+
+/* CTA */
+.cta-section{text-align:center;padding:100px 0}
+.cta-section h2{font-size:36px;font-weight:700;letter-spacing:-.8px;margin-bottom:12px}
+.cta-section p{font-size:15px;color:var(--text2);margin-bottom:28px}
+
+/* Footer */
+footer{
+  border-top:1px solid var(--border);padding:32px 0;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;color:var(--text3);
+}
+
+/* Fade in */
+.fade{opacity:0;transform:translateY(20px);transition:opacity .7s,transform .7s}
+.fade.visible{opacity:1;transform:translateY(0)}
+
+/* Mobile */
+@media(max-width:768px){
+  .container{padding:0 16px}
+  .hero{padding:100px 0 60px}
+  .hero h1{font-size:32px;letter-spacing:-.8px}
+  .hero .sub{font-size:15px}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+  .features{grid-template-columns:1fr}
+  .platform-grid{grid-template-columns:1fr}
+  .arch-diagram{grid-template-columns:repeat(2,1fr)}
+  .job-item .job-salary{display:none}
+  nav .links a{font-size:11px;padding:4px 10px}
+  section{padding:60px 0}
+}
+
+@media(max-width:480px){
+  .stats-bar{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#111"/><path d="M8 24L14 8L16 12L12 24H8Z" fill="#fff"/><path d="M24 24L18 8L16 12L20 24H24Z" fill="#fff" fill-opacity=".7"/><circle cx="16" cy="18" r="1.5" fill="#47d096"/></svg>
+      Audra 求职助手
+      <span class="dot"></span>
+    </div>
+    <div class="links">
+      <a href="#how">如何工作</a>
+      <a href="#platforms">平台覆盖</a>
+      <a href="#jobs">岗位推荐</a>
+      <a href="#arch">系统架构</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="badge"><span class="live"></span> 系统运行中 · 每日自动扫描 690+ 岗位</div>
+    <h1>AI 驱动的<span>全自动</span><br>求职系统</h1>
+    <p class="sub">
+      跨三平台智能扫描、精准匹配、自动投递、进度追踪、面试备战 — 
+      把每天 2 小时的重复劳动压缩到 20 分钟。
+    </p>
+    <div class="cta-row">
+      <a href="#jobs" class="btn btn-primary">查看今日推荐岗位</a>
+      <a href="#how" class="btn btn-ghost">了解工作原理</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="container">
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="number green">3</div>
+      <div class="label">覆盖平台</div>
+    </div>
+    <div class="stat-item">
+      <div class="number blue">500+</div>
+      <div class="label">日均扫描岗位</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">99</div>
+      <div class="label">今日匹配岗位</div>
+    </div>
+    <div class="stat-item">
+      <div class="number green">8.5</div>
+      <div class="label">平均匹配分</div>
+    </div>
+  </div>
+</div>
+
+<!-- How it works -->
+<section id="how">
+  <div class="container">
+    <div class="section-label">HOW IT WORKS</div>
+    <div class="section-title">从扫描到面试，全链路自动化</div>
+    <div class="section-desc">
+      六个阶段覆盖求职全生命周期。你只需要做一件事：在关键时刻展现最好的自己。
+    </div>
+    <div class="features">
+      <div class="feature-card fade">
+        <div class="icon">🔍</div>
+        <h3>多平台智能扫描</h3>
+        <p>每日自动登录 BOSS 直聘、猎聘、智联招聘，按预设关键词搜索，提取结构化岗位数据。</p>
+      </div>
+      <div class="feature-card fade">
+        <div class="icon">🧠</div>
+        <h3>LLM 语义匹配</h3>
+        <p>大模型深度比对 JD 与简历，输出 0-10 匹配分和推荐理由，不再靠直觉判断。</p>
+      </div>
+      <div class="feature-card fade">
+        <div class="icon">🚀</div>
+        <h3>一键智能投递</h3>
+        <p>自动生成个性化打招呼话术，按分数降序投递。内置账号保护，防止平台风控。</p>
+      </div>
+      <div class="feature-card fade">
+        <div class="icon">📊</div>
+        <h3>统一进度追踪</h3>
+        <p>三平台投递状态自动同步到 Excel 看板。被查看、被回复、面试邀约一目了然。</p>
+      </div>
+      <div class="feature-card fade">
+        <div class="icon">🎯</div>
+        <h3>深度面试备战</h3>
+        <p>目标公司工商背景研究、JD 逐条拆解、交互 Demo 构建、模拟面试 — 一套带走。</p>
+      </div>
+      <div class="feature-card fade">
+        <div class="icon">📈</div>
+        <h3>质量持续迭代</h3>
+        <p>A/B 测试优化话术 CTR、转化漏斗分析、Offer 多维对比评估，数据驱动每一步。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Platform coverage -->
+<section id="platforms">
+  <div class="container">
+    <div class="section-label">PLATFORM COVERAGE</div>
+    <div class="section-title">三大招聘平台全覆盖</div>
+    <div class="section-desc">同一套匹配引擎，不同平台适配。扫描、投递、监控三阶段全闭环。</div>
+    <div class="platform-grid">
+      <div class="platform-card fade">
+        <div class="plat-header">
+          <span class="plat-name">BOSS 直聘</span>
+          <span class="plat-status active">运行中</span>
+        </div>
+        <div class="plat-meta">
+          <div class="meta-item"><div class="meta-num">180</div><div class="meta-label">今日扫描</div></div>
+          <div class="meta-item"><div class="meta-num">42</div><div class="meta-label">匹配岗位</div></div>
+        </div>
+        <div class="plat-date">自动打招呼 · 智能话术 · 回复监控</div>
+      </div>
+      <div class="platform-card fade">
+        <div class="plat-header">
+          <span class="plat-name">猎聘</span>
+          <span class="plat-status active">运行中</span>
+        </div>
+        <div class="plat-meta">
+          <div class="meta-item"><div class="meta-num">200</div><div class="meta-label">今日扫描</div></div>
+          <div class="meta-item"><div class="meta-num">68</div><div class="meta-label">匹配岗位</div></div>
+        </div>
+        <div class="plat-date">每日自动投递 · Cookie 注入</div>
+      </div>
+      <div class="platform-card fade">
+        <div class="plat-header">
+          <span class="plat-name">智联招聘</span>
+          <span class="plat-status active">运行中</span>
+        </div>
+        <div class="plat-meta">
+          <div class="meta-item"><div class="meta-num">310</div><div class="meta-label">今日扫描</div></div>
+          <div class="meta-item"><div class="meta-num">31</div><div class="meta-label">匹配岗位</div></div>
+        </div>
+        <div class="plat-date">每日两步投递 · 即时同步</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Top jobs -->
+<section id="jobs">
+  <div class="container">
+    <div class="section-label">TODAY'S TOP PICKS</div>
+    <div class="section-title">今日优先投递</div>
+    <div class="section-desc">LLM 语义匹配 + 规则过滤后的高分岗位，按推荐度排序。</div>
+    <div class="job-list">
+      <div class="job-item fade">
+        <div class="score high">9</div>
+        <div class="job-info">
+          <div class="job-title">AI产品经理（Agent开发方向）</div>
+          <div class="job-company">某金融科技公司 · A轮 · 200-500人 · 广州天河</div>
+        </div>
+        <div class="job-salary">18-30k</div>
+        <div class="job-platform">BOSS直聘</div>
+      </div>
+      <div class="job-item fade">
+        <div class="score high">8</div>
+        <div class="job-info">
+          <div class="job-title">AI产品经理（大模型应用）</div>
+          <div class="job-company">某头部技术服务集团 · 已上市 · 10000人+ · 广州</div>
+        </div>
+        <div class="job-salary">18-35k</div>
+        <div class="job-platform">猎聘</div>
+      </div>
+      <div class="job-item fade">
+        <div class="score high">8</div>
+        <div class="job-info">
+          <div class="job-title">AI产品经理（智能投研）</div>
+          <div class="job-company">某知名金融机构 · 广州</div>
+        </div>
+        <div class="job-salary">20-35k</div>
+        <div class="job-platform">智联招聘</div>
+      </div>
+      <div class="job-item fade">
+        <div class="score mid">7</div>
+        <div class="job-info">
+          <div class="job-title">AI产品经理（零售数字化）</div>
+          <div class="job-company">某智慧零售方案商 · 500-999人 · 广州黄埔</div>
+        </div>
+        <div class="job-salary">15-25k</div>
+        <div class="job-platform">BOSS直聘</div>
+      </div>
+      <div class="job-item fade">
+        <div class="score mid">7</div>
+        <div class="job-info">
+          <div class="job-title">产品部 - AI产品经理（工业智能化方向）</div>
+          <div class="job-company">某工业互联网平台 · 知名机构孵化 · 广州海珠</div>
+        </div>
+        <div class="job-salary">15-25k</div>
+        <div class="job-platform">猎聘</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section id="arch">
+  <div class="container">
+    <div class="section-label">SYSTEM ARCHITECTURE</div>
+    <div class="section-title">五层 Agent 架构</div>
+    <div class="section-desc">
+      基于 Hermes Agent 引擎，16 个 Skill 模块协同。80% 逻辑复用，20% 平台适配。
+    </div>
+    <div class="arch-diagram">
+      <div class="arch-layer fade">
+        <div class="layer-num">L1</div>
+        <div class="layer-name">感知层</div>
+        <div class="layer-items">BOSS 扫描器<br>猎聘扫描器<br>智联扫描器</div>
+      </div>
+      <div class="arch-layer fade">
+        <div class="layer-num">L2</div>
+        <div class="layer-name">决策层</div>
+        <div class="layer-items">规则过滤<br>LLM 语义匹配<br>排序推荐</div>
+      </div>
+      <div class="arch-layer fade">
+        <div class="layer-num">L3</div>
+        <div class="layer-name">执行层</div>
+        <div class="layer-items">自动打招呼<br>一键投递<br>回复监控</div>
+      </div>
+      <div class="arch-layer fade">
+        <div class="layer-num">L4</div>
+        <div class="layer-name">准备层</div>
+        <div class="layer-items">公司研究<br>JD 拆解<br>Demo 构建</div>
+      </div>
+      <div class="arch-layer fade">
+        <div class="layer-num">L5</div>
+        <div class="layer-name">评估层</div>
+        <div class="layer-items">投递追踪<br>Offer 分析<br>质量迭代</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2>让 AI 帮你找工作</h2>
+    <p>把时间留给真正重要的事 — 面试和决策</p>
+    <a href="#" class="btn btn-primary">了解更多</a>
+  </div>
+</section>
+
+<footer class="container">
+  <span>© 2026 Audra426 · Built on Hermes Agent</span>
+  <span>本地运行 · ICP 备案中</span>
+</footer>
+
+<script>
+// Scroll fade-in
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade').forEach(el => observer.observe(el));
+
+// Animate stats on load
+function animateNumber(el, target, suffix='', duration=1400){
+  const start = performance.now();
+  function update(now){
+    const p = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = suffix + Math.round(eased * target) + (suffix ? '' : '');
+    if(p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// Trigger number animation when stats bar is visible
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      const nums = e.target.querySelectorAll('.number');
+      if(nums[1].textContent === '450+'){
+        // Already has the final value, just trigger animation for others if needed
+      }
+      statsObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+const statsBar = document.querySelector('.stats-bar');
+if(statsBar) statsObs.observe(statsBar);
+</script>
+
+</body>
+</html>

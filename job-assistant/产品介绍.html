@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 求职 Agent — 产品介绍</title>
+<style>
+  :root {
+    --bg:        #faf9f5;
+    --text:      #141413;
+    --muted:     #b0aea5;
+    --card:      #f0eee6;
+    --card-deep: #e3dacc;
+    --card-light:#e8e6dc;
+    --dark:      #141413;
+    --accent:    #d97757;
+    --blue:      #6a9bcc;
+    --olive:     #788c5d;
+    --radius:    8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+    line-height: 1.75;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 80px 32px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--dark);
+    color: #fff;
+    padding: 56px 48px;
+    border-radius: var(--radius);
+    margin-bottom: 64px;
+  }
+  .hero h1 {
+    font-family: 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+    font-size: 2.2em;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+  .hero .subtitle {
+    font-size: 1.05em;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ── Badge row ── */
+  .badge-row {
+    display: flex; gap: 8px; margin-top: 24px; flex-wrap: wrap;
+  }
+  .badge {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: 0;
+    background: none;
+    border: none;
+  }
+  .badge::after { content: '·'; margin-left: 8px; color: var(--muted); }
+  .badge:last-child::after { content: ''; }
+
+  /* ── Sections ── */
+  section { margin-bottom: 64px; }
+  section h2 {
+    font-family: 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+    font-size: 1.5em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  section h3 {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    color: var(--text);
+  }
+
+  /* ── Problem grid ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .problem-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .problem-card .label {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .problem-card p {
+    font-size: 0.92em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .problem-card .fix {
+    font-size: 0.9em;
+    color: var(--olive);
+  }
+
+  /* ── Flow ── */
+  .flow {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    margin: 8px 0;
+  }
+  .flow-step {
+    flex: 1;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 1.1em;
+  }
+  .flow-step .step-num {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .flow-step .step-title {
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 6px;
+  }
+  .flow-step .step-desc {
+    font-size: 0.82em;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── Metrics ── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .metric-card {
+    background: var(--card-deep);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+  }
+  .metric-card .value {
+    font-family: 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+    font-size: 2.4em;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1;
+  }
+  .metric-card .unit {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .source-note {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 16px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Highlights ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .highlight {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    border-left: 2px solid var(--card-deep);
+  }
+  .highlight h3 {
+    font-weight: 600;
+    font-size: 0.95em;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+  .highlight p {
+    font-size: 0.88em;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── Architecture diagram ── */
+  .arch-diagram {
+    background: var(--card-light);
+    border-radius: var(--radius);
+    padding: 24px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 11px;
+    line-height: 1.9;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Feature list ── */
+  .feature-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .feature-list li {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .feature-list .check {
+    font-family: 'SF Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--card-deep);
+    text-align: center;
+  }
+  footer p {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 2;
+  }
+
+  /* ── Accent link (only colored element on page) ── */
+  .accent-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 40px 20px; }
+    .hero { padding: 40px 28px; }
+    .hero h1 { font-size: 1.6em; }
+    .problem-grid, .metrics, .two-col, .feature-list {
+      grid-template-columns: 1fr;
+    }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); width: 100%; padding: 4px 0; }
+  }
+</style>
+
+<div class="hero">
+  <h1>AI 求职 Agent</h1>
+  <p class="subtitle">全自动多平台岗位发现、智能匹配、自动投递、监控追踪</p>
+  <div class="badge-row">
+    <span class="badge">BOSS直聘</span>
+    <span class="badge">猎聘</span>
+    <span class="badge">智联招聘</span>
+    <span class="badge">日均 110+ 岗位</span>
+    <span class="badge">7×24 全自动</span>
+    <span class="badge">日均 &lt; ¥0.5</span>
+  </div>
+</div>
+
+<section>
+  <h2>解决什么问题</h2>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="label">痛点一</div>
+      <p>手动打开三个招聘网站，逐个搜索关键词、翻页、阅读 JD——每天耗时 1–2 小时，且容易遗漏新发布的岗位。</p>
+      <div class="fix">→ 三平台定时自动扫描，不漏岗</div>
+    </div>
+    <div class="problem-card">
+      <div class="label">痛点二</div>
+      <p>人工判断"这个岗适不适合我"依赖直觉，容易漏掉表面上不相关但实际高度匹配的机会，或误投看似匹配实则不靠谱的岗位。</p>
+      <div class="fix">→ LLM 深度阅读 JD 全文，双维度评分</div>
+    </div>
+    <div class="problem-card">
+      <div class="label">痛点三</div>
+      <p>打了招呼忘记跟进、HR 回复了没看到、投了哪些公司记不清——状态管理全靠记忆，极易遗漏关键机会。</p>
+      <div class="fix">→ 自动监控 + 发简历 + Excel 全量追踪</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>核心流程</h2>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="step-num">01</div>
+      <div class="step-title">智能扫描</div>
+      <div class="step-desc">8 个 AI 关键词<br>三平台定时抓取<br>PUA 薪资解码</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">02</div>
+      <div class="step-title">多层过滤</div>
+      <div class="step-desc">薪资 / 经验 / 学历<br>黑名单 / 区域<br>6 层规则引擎</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">03</div>
+      <div class="step-title">AI 评分</div>
+      <div class="step-desc">JD 全文提取<br>双维度 LLM 打分<br>自动生成话术</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">04</div>
+      <div class="step-title">自动投递</div>
+      <div class="step-desc">按分数降序<br>一键打招呼<br>HR 回复 → 发简历</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">05</div>
+      <div class="step-title">追踪闭环</div>
+      <div class="step-desc">2 小时轮询回复<br>Excel 实时同步<br>EOD 日报推送</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>运行数据</h2>
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="value">114</div>
+      <div class="unit">日均处理岗位</div>
+    </div>
+    <div class="metric-card">
+      <div class="value">42%</div>
+      <div class="unit">高分匹配率 ≥7</div>
+    </div>
+    <div class="metric-card">
+      <div class="value">7.8%</div>
+      <div class="unit">HR 回复转化</div>
+    </div>
+    <div class="metric-card">
+      <div class="value">&lt;¥0.5</div>
+      <div class="unit">日均 API 成本</div>
+    </div>
+  </div>
+  <p class="source-note">数据来源  2026-05-14 至 05-15 实际运行  ·  三平台 229 个岗位评分  ·  51 次打招呼  ·  全流程自动化率 100%</p>
+</section>
+
+<section>
+  <h2>技术亮点</h2>
+  <div class="two-col">
+    <div class="highlight">
+      <h3>极致成本控制</h3>
+      <p>简历文本固化在 Prompt 前缀，利用 DeepSeek Prompt Cache 机制，每次评分仅计岗位内容 Token。选用 Flash 模型处理高频评分，日均 API 开销不到五毛钱。</p>
+    </div>
+    <div class="highlight">
+      <h3>健壮反爬体系</h3>
+      <p>Firefox Cookie 注入绕过登录验证码；BOSS PUA 字体 Unicode 解码；三平台独立 Playwright 脚本错峰执行；验证码自动检测 + Telegram 即时告警。</p>
+    </div>
+    <div class="highlight">
+      <h3>双维度 AI 评分</h3>
+      <p>不只做关键词匹配——从人类招聘视角评估薪资合理性、公司靠谱度、行业匹配度、加班信号、外包嫌疑，避免"关键词全中但实际是坑"的误投。</p>
+    </div>
+    <div class="highlight">
+      <h3>全闭环自动化</h3>
+      <p>Cookie 检查 → 扫描 → 评分 → 打招呼 → 回复监控 → 发简历 → Excel 追踪 → 日报，<span class="accent-link">18 个 Cron 任务</span>协同，零人工干预。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>技术架构</h2>
+  <div class="arch-diagram">
+┌─────────────────────────────────────────────────────────┐
+│                    Cron 调度层 (18 Jobs)                  │
+│  08:00 Cookie检查 → 09:00 BOSS扫描 → 09:15 打招呼        │
+│  10:00 猎聘扫描 → 10:15 投递 → 11:00 智联扫描 → 11:15   │
+│  10-18 每2h 回复监控 → 17:30 EOD日报                     │
+└────────────┬────────────────────────────────────────────┘
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│                   Hermes Agent 核心                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐               │
+│  │ Brain L1 │  │ 记忆层   │  │ 编排层   │               │
+│  │ 智能路由 │  │ 双层记忆 │  │ 子Agent  │               │
+│  └──────────┘  └──────────┘  └──────────┘               │
+└────────────┬────────────────────────────────────────────┘
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│                    平台适配层                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐               │
+│  │ BOSS直聘 │  │   猎聘   │  │ 智联招聘 │               │
+│  │ PUA解码  │  │ 3步投递  │  │ 2步投递  │               │
+│  │ Cookie注 │  │ Cookie注 │  │ Cookie注 │               │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘               │
+│       └──────────────┼─────────────┘                     │
+│                      ▼                                   │
+│  ┌──────────────────────────────────────┐                │
+│  │       统一过滤引擎 (6层规则)          │                │
+│  │  薪资 → 经验 → 学历 → 黑名单         │                │
+│  │  → 避开词 → 区域                     │                │
+│  └──────────────────────────────────────┘                │
+└────────────┬────────────────────────────────────────────┘
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│                   AI 评分 & 决策层                        │
+│  ┌──────────────────────────────────────┐                │
+│  │  DeepSeek V4 Flash · 双维度评分      │                │
+│  │  硬匹配 + 人类视角 → 1-10 分         │                │
+│  │  自动生成个性化打招呼话术             │                │
+│  └──────────────────────────────────────┘                │
+└────────────┬────────────────────────────────────────────┘
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│                      输出 & 追踪                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐               │
+│  │ 打招呼   │  │ Excel    │  │ Telegram │               │
+│  │ 自动化   │  │ 投递追踪 │  │ 日报推送 │               │
+│  └──────────┘  └──────────┘  └──────────┘               │
+└─────────────────────────────────────────────────────────┘
+  </div>
+</section>
+
+<section>
+  <h2>完整能力</h2>
+  <ul class="feature-list">
+    <li><span class="check">01</span> 三平台统一覆盖 — BOSS直聘、猎聘、智联招聘，同一套过滤规则和评分标准</li>
+    <li><span class="check">02</span> 6 层智能过滤 — 薪资下限、经验年限、学历要求、黑名单公司、避开关键词、区域白名单</li>
+    <li><span class="check">03</span> LLM 深度匹配 — 逐条提取 JD 全文，双维度综合评分，1–10 分精确量化</li>
+    <li><span class="check">04</span> 个性化话术 — 针对每个岗位自动生成打招呼语，突出最强交叉点</li>
+    <li><span class="check">05</span> 自动打招呼 — 按分数降序逐一执行，同公司间隔 ≥5 岗，保护账号权重</li>
+    <li><span class="check">06</span> 回复监控 — 每 2 小时轮询检测 HR 回复，自动发送简历附件</li>
+    <li><span class="check">07</span> Excel 全量追踪 — 三子表（BOSS/猎聘/智联），投递状态变更即时回流</li>
+    <li><span class="check">08</span> EOD 日报 — 每日 17:30 自动汇总三平台投递概况，推送到 Telegram</li>
+    <li><span class="check">09</span> Cookie 健康监控 — 每 2 小时检查三平台 Cookie 有效性，失效即时告警</li>
+    <li><span class="check">10</span> 反爬保护 — 错峰执行、随机间隔、验证码检测、火狐真实浏览器指纹</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Built on Hermes Agent · DeepSeek V4 · Playwright · 18 Cron Jobs</p>
+  <p style="margin-top:4px;">2026-05-15 · 吴东蔚 (Devin)</p>
+</footer>
+</html>
