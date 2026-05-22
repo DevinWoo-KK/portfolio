@@ -54,8 +54,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,10,0.92
 .hero{padding:8rem 0 4rem;min-height:100vh;display:flex;align-items:center}
 .hero-grid{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto;padding:0 2rem}
 .hero-avatar{flex-shrink:0}
-.avatar-frame{width:240px;height:240px;border-radius:24px;overflow:hidden;border:2px solid #2a2826;background:var(--surface);position:relative}
-.avatar-frame img{width:240px;height:240px;object-fit:cover;display:block}
+.avatar-frame{width:240px;height:240px;border-radius:24px;overflow:hidden;border:2px solid #2a2826;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.avatar-frame img{width:100%;height:100%;object-fit:cover;display:none}
 .avatar-frame img.loaded{display:block}
 .avatar-ph{font-family:var(--serif);font-size:4.5rem;color:var(--text3)}
 .hero-text{flex:1;min-width:0}
@@ -140,25 +140,6 @@ body.light .modal{background:var(--surface);border-color:var(--border-subtle)}.m
 .modal-overlay.active .modal{transform:translateY(0)}
 .modal-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:var(--text3);font-size:1.4rem;cursor:pointer;transition:color .2s}body.light .modal-close{color:var(--text2)}
 .modal-close:hover{color:var(--purple)}
-.lib-overlay{position:fixed;inset:0;z-index:2100;background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
-.lib-overlay.active{opacity:1;pointer-events:auto}
-.lib-window{background:var(--carbon);border:1px solid #2a2826;border-radius:var(--r-xl);width:min(900px,94vw);max-height:85vh;overflow-y:auto;padding:2rem 2.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.8);transform:translateY(16px);transition:transform .3s}
-.lib-overlay.active .lib-window{transform:translateY(0)}
-.lib-header{text-align:center;margin-bottom:2rem}
-.lib-header h2{font-size:1.5rem;margin-bottom:0.3rem}
-.lib-header p{color:var(--text2);font-size:0.85rem}
-.lib-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;padding-bottom:0.5rem}
-.lib-card{background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:1.25rem;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:0.5rem}
-.lib-card:hover{background:var(--carbon);border-color:var(--purple);transform:translateY(-2px);box-shadow:0 8px 24px rgba(167,139,250,0.1)}
-.lib-card .lib-title{font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--text);line-height:1.3}
-.lib-card .lib-desc{font-size:0.72rem;color:var(--text2);line-height:1.5;flex:1}
-.lib-card .lib-tags{display:flex;gap:4px;flex-wrap:wrap}
-.lib-card .lib-tags span{font-family:var(--mono);font-size:0.6rem;padding:2px 7px;border-radius:3px;background:rgba(167,139,250,0.1);color:var(--purple)}
-.lib-card .lib-link{font-family:var(--mono);font-size:0.65rem;color:var(--amber);text-decoration:none;margin-top:auto}
-.lib-card .lib-link:hover{text-decoration:underline}
-@media(max-width:768px){.lib-grid{grid-template-columns:repeat(2,1fr)}.lib-window{padding:1.5rem}}
-@media(max-width:480px){.lib-grid{grid-template-columns:1fr}}
-
 body.light .modal h2{color:var(--text)}body.light .modal .m-sub{color:var(--text2)}body.light .modal .m-sec h4{color:var(--green)}body.light .modal .m-sec p,body.light .modal .m-sec li{color:var(--text2)}.modal h2{font-size:1.5rem;margin-bottom:0.5rem}.modal .m-sub{color:var(--text2);font-size:0.82rem;margin-bottom:1.5rem}
 .modal .m-sec{margin-bottom:1.5rem}.modal .m-sec h4{font-family:var(--mono);font-size:0.85rem;letter-spacing:0.1em;color:var(--green);text-transform:uppercase;margin-bottom:0.5rem}
 .modal .m-sec a{color:var(--amber);text-decoration:underline}
@@ -213,63 +194,12 @@ footer .stat-green{color:var(--green)}
   .tl-item{gap:15px}
   .tl-item::before{left:58px}
   .tl-date{width:55px;font-size:0.58rem}
-  .tl-card{padding:.8rem}
-  .tl-title{font-size:.9rem}
-  .tl-desc{display:none}
-  .proj-stage{height:100vh;position:relative;top:auto;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none}
-  .proj-stage::-webkit-scrollbar{display:none}
-  .proj-track{padding-left:8vw;scroll-snap-align:start}
-  .proj-card{flex:0 0 82vw;flex-direction:column;padding:1.2rem;height:auto;gap:1rem;scroll-snap-align:center}
-  .proj-card:first-child{scroll-snap-align:start}
-  .proj-card:last-child{margin-right:8vw;scroll-snap-align:end}
-  .proj-card .pc-right{height:auto;aspect-ratio:4/3;width:100%}
-  .proj-card .pc-left h2{font-size:1.3rem}
-  .pc-desc{font-size:.78rem}
-  .proj-hint{display:none!important}
-  .proj-progress-wrap{display:none!important}
-
+  .proj-stage{height:100vh;position:relative;top:auto}
+  .proj-card{transition:background-color .4s,border-color .4s;flex:0 0 85vw;flex-direction:column;padding:1.5rem;height:auto}
+  .proj-card .pc-right{height:160px}
   .skills-grid{flex-direction:column}
   #certLayer{width:100%!important}
-  .connect-row{gap:.75rem}
-  .connect-item{min-width:80px;padding:.8rem 1rem}
-  .qr-box{max-width:90vw}.qr-box .qr-ph{width:250px;height:250px}
-  .qr-box img{width:250px!important;height:250px!important}
-  .hero h1{font-size:1.8rem}
-  .hero h1 span{font-size:1rem!important}
-  .section-header h2{font-size:1.4rem}
-  .tags{gap:.35rem}.tag{font-size:.62rem;padding:.2rem .55rem}
-  .hero-cta{font-size:.7rem;padding:.5rem 1rem}
-  .modal{width:98%;padding:1.5rem;max-height:90vh}
-  .modal.ide{max-width:98vw;width:98vw}.m-sec-layout{flex-direction:column}
-  .modal h2{font-size:1.2rem}
-  .cert-carousel{height:260px}
-  .cert-inner img{max-height:200px}
-  .about-block h3{font-size:.9rem}
-  .about-block p{font-size:.88rem;line-height:1.85}
-  .about-block h3{font-size:.95rem}
-  .hamburger{display:flex}
-  .tl-item{gap:8px;padding:2px 0}
-  .tl-card{padding:.9rem}
-  .tl-date{font-size:0.6rem;width:48px}
-  .connect-item{min-width:90px;padding:.9rem 1.1rem}
-  .hero-intro{font-size:.88rem;line-height:1.7}
-  .proj-card:active{transform:scale(0.98)!important}
-  .tl-item:active .tl-card{transform:scale(0.98);transition:transform .15s}
-  footer{padding:1.5rem 0}footer p{font-size:.62rem}
-  section{padding:2.5rem 0}
-  .section-header{margin-bottom:2rem}
 }
-.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:auto;align-items:center;justify-content:center;z-index:10}
-.hamburger span{width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;display:block;transform-origin:center}
-.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(2.5px,2.5px)}
-.hamburger.active span:nth-child(2){opacity:0;transform:scaleX(0)}
-.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(2.5px,-2.5px)}
-.mobile-menu{position:fixed;top:3.5rem;left:0;right:0;bottom:0;background:rgba(8,8,10,0.97);backdrop-filter:blur(16px);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;opacity:0;pointer-events:none;transition:opacity .3s}
-.mobile-menu.active{opacity:1;pointer-events:auto}
-.mobile-menu a{font-size:1.2rem;color:var(--text2);text-decoration:none;font-family:var(--sans);letter-spacing:0.05em;padding:0.6rem 1.5rem;transition:color .2s}
-.mobile-menu a:hover,.mobile-menu a:active{color:var(--green)}
-body.light .mobile-menu{background:rgba(250,248,245,0.97)}
-
 /* particle hero bg */
 .hero-particle{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;opacity:0.55}
 .hero-particle canvas{width:100%!important;height:100%!important;display:block}
@@ -294,26 +224,17 @@ body.light .mobile-menu{background:rgba(250,248,245,0.97)}
     <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
     <li><a href="#connect" data-i18n="nav.connect">Connect</a></li>
   </ul>
-  <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
   <button class="lang-btn" id="langBtn" onclick="toggleLang()"><span id="langZH" class="lang-active">中文</span>/<span id="langEN">EN</span></button>
 </div></nav>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#hero" onclick="closeMobileMenu()" data-i18n="nav.home">首页</a>
-  <a href="#about" onclick="closeMobileMenu()" data-i18n="nav.about">关于我</a>
-  <a href="#journey" onclick="closeMobileMenu()" data-i18n="nav.journey">历程</a>
-  <a href="#projects" onclick="closeMobileMenu()" data-i18n="nav.projects">项目</a>
-  <a href="#skills" onclick="closeMobileMenu()" data-i18n="nav.skills">能力</a>
-  <a href="#connect" onclick="closeMobileMenu()" data-i18n="nav.connect">联系</a>
-</div>
 
 <section class="hero" id="hero">
   <div class="hero-particle" id="heroParticle"></div>
   <div class="hero-grid">
   <div class="hero-avatar"><div class="avatar-frame">
-    <img id="avatarImg" src="green.png?t=3" alt="" style="width:240px;height:240px;object-fit:cover;display:block" onload="document.getElementById('avatarPH').style.display='none'" onerror="console.log('fail')"><div class="avatar-ph" id="avatarPH">D</div>
+    <img id="avatarImg" src="" alt="" onerror="this.style.display='none'"><div class="avatar-ph" id="avatarPH">D</div>
   </div></div>
   <div class="hero-text">
-    <h1><span data-i18n="hero.name">Devin</span></h1>
+    <h1><span data-i18n="hero.name">Devin</span><span style="color:#ffffff;font-family:var(--sans);font-size:clamp(1rem,2.5vw,1.8rem);font-weight:300">（正在搭建中...）</span></h1>
     <div class="typewriter-wrap"><span class="typewriter" id="typewriter"></span><span class="cursor"></span></div>
 <p class="hero-intro" style="color:#c5c0ba"><span data-i18n="hero.intro">前银行对公业务经理，正在转向 AI 产品与 Agent 系统设计。希望结合业务理解与技术能力，推动 AI 产品在真实行业场景中的创新与商业化落地。</span><span class="cursor"></span></p>
     <div class="tags">
@@ -356,8 +277,6 @@ body.light .mobile-menu{background:rgba(250,248,245,0.97)}
 </div></section>
 
 <footer><p style="transition:color .4s">> <span class="stat-green">system.status = evolving</span>  ·  Built with curiosity, caffeine and countless late nights.</p></footer>
-
-<div class="lib-overlay" id="libOverlay" onclick="closeDemoLibrary(event)"><div class="lib-window" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeDemoLibrary()">&times;</button><div class="lib-header"><h2>Project Library</h2><p>Agent Demos &amp; Side Projects</p></div><div class="lib-grid" id="libGrid"></div></div></div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeModal()">&times;</button><div id="modalBody"></div></div></div>
 <div class="qr-overlay" id="qrOverlay" onclick="closeQR(event)"><div class="qr-box" onclick="event.stopPropagation()"><h4>微信</h4><div class="qr-ph"><img src="404 WeChat.jpg" style="width:500px;height:500px;object-fit:contain" alt="微信"></div><button onclick="closeQR()">关闭</button></div></div>
@@ -405,15 +324,9 @@ function buildJourney(){
 var projData=[
 {img:'项目/[00]/个人网站项目[00]封面 - Hermes架构设计.png',title:{zh:'Hermes Agent',en:'Hermes Agent'},desc:{zh:'16 章架构：六层路由、双模人格、四眼感知、双层记忆、多模型 fallback、子Agent 编排、自愈基础设施',en:'16-chapter architecture: 6-layer routing, dual-mode persona, 4-eye perception, dual-layer memory, multi-model fallback, Sub-Agent orchestration, self-healing infra'},tags:['Agent','Memory','RAG','MCP'],nodes:['Gateway ▸ online','Memory ▸ active','Orchestrator ▸ idle','Infra ▸ healthy'],modal:{zh:'<div class="m-sec"><h4>1. 成本设计</h4><p><span style="color:var(--purple)">▸</span> 识别 Prompt Cache 120 倍价差，重构会话路由策略并设计 Session STICKY 锁定机制，相比动态智能路由模式，预计年 API 成本降低约 90%。</p><p><span style="color:var(--purple)">▸</span> 路由管线前三层基于启发式规则，&lt;5ms + 零 API 成本覆盖 60%+ 消息，减少不必要的模型调用。</p><p><span style="color:var(--purple)">▸</span> 构建感知调度层，低成本预判问题复杂度后再选模型；8 个辅助模块分流独立模型，避免抢占主力配额。</p></div><div class="m-sec"><h4>2. 系统稳定性</h4><p><span style="color:var(--purple)">▸</span> 15 步处理链路每层独立 fail-safe；模型/供应商两级熔断器自动切换，状态持久化保证重启后不丢失。</p><p><span style="color:var(--purple)">▸</span> API 密钥四重冗余存储，支持自动检测与逐级恢复；自愈体系三层递进，优先使用零成本规则诊断。</p><p><span style="color:var(--purple)">▸</span> 四层数据保护：秒级即时回滚、手动快照、Git 版本控制、每日自动全量快照。</p></div><div class="m-sec"><h4>3. 人格与安全</h4><p><span style="color:var(--purple)">▸</span> 基于同一人格基线的 WORK/LIFE 双关系距离设计：命令触发与上下文信号自动切换，执行层共享记忆，交互层提供差异化交互体验。</p><p><span style="color:var(--purple)">▸</span> 独立门控检测器置于人格系统之上，自动化场景强制锁定工作模式，不可绕过。</p><p><span style="color:var(--purple)">▸</span> 建立反模式知识库，将 11 个已修复的系统级陷阱文档化，防止同类问题复现。</p></div><div class="m-sec"><h4>4. 记忆与知识管理</h4><p><span style="color:var(--purple)">▸</span> RAG 检索增强：FTS5 全文索引 → Query Rewrite → Rerank 语义排序，跨会话召回命中率 83%。</p><p><span style="color:var(--purple)">▸</span> 双层记忆架构：内置记忆 session 启动冻结保护缓存，外部知识图谱动态检索设 3 秒熔断超时。</p><p><span style="color:var(--purple)">▸</span> 持久化知识沉淀：LLM-Wiki 构建可查询的互联知识库 + Obsidian 本地笔记管理 + NotebookLM 深度文档分析，形成从即时对话到长期沉淀的完整链路。</p><p><span style="color:var(--purple)">▸</span> 单一权威架构文档，代码变更必须同步更新，消除文档漂移。</p></div><div class="m-sec"><h4>5. 多 Agent 编排</h4><p><span style="color:var(--purple)">▸</span> 子 Agent 结果需父 Agent 独立验证，不信任自报；9 个角色支持并行执行与流水线编排。</p></div>',en:'<div class="m-sec"><h4>1. Cost Engineering</h4><p><span style="color:var(--purple)">▸</span> Identified Prompt Cache 120x price gap, redesigned session routing with STICKY lock — ~90% annual API cost reduction vs dynamic routing.</p><p><span style="color:var(--purple)">▸</span> First 3 routing layers are heuristic-based, &lt;5ms + zero API cost covering 60%+ messages.</p><p><span style="color:var(--purple)">▸</span> Perception scheduler pre-assesses complexity before model selection; 8 auxiliary modules offload from primary quota.</p></div><div class="m-sec"><h4>2. System Stability</h4><p><span style="color:var(--purple)">▸</span> 15-step pipeline with per-layer fail-safe; dual-level circuit breakers (model/provider) with persistent state across restarts.</p><p><span style="color:var(--purple)">▸</span> 4-layer credential redundancy with auto-detection and progressive recovery; 3-tier self-healing favoring zero-cost rule-based diagnosis.</p><p><span style="color:var(--purple)">▸</span> 4-layer data protection: instant rollback, manual snapshots, Git version control, daily full snapshots.</p></div><div class="m-sec"><h4>3. Persona & Security</h4><p><span style="color:var(--purple)">▸</span> WORK/LIFE dual-mode on a single persona baseline: command-triggered + context-signal auto-switching, shared memory at execution layer, differentiated interaction at presentation layer.</p><p><span style="color:var(--purple)">▸</span> Independent gatekeeper detector above persona system, auto-lock to WORK mode in automated contexts — non-bypassable.</p><p><span style="color:var(--purple)">▸</span> Anti-pattern knowledge base: 11 resolved system-level traps documented to prevent recurrence.</p></div><div class="m-sec"><h4>4. Memory & Knowledge</h4><p><span style="color:var(--purple)">▸</span> RAG pipeline: FTS5 full-text → Query Rewrite → Rerank semantic ranking, 83% cross-session recall rate.</p><p><span style="color:var(--purple)">▸</span> Dual-layer memory: built-in memory with session-start freeze protection, external knowledge graph with 3-second circuit-breaker timeout.</p><p><span style="color:var(--purple)">▸</span> Persistent knowledge pipeline: LLM-Wiki (queryable interlinked KB) + Obsidian (local notes) + NotebookLM (deep document analysis).</p><p><span style="color:var(--purple)">▸</span> Single authoritative architecture document, code changes must sync — eliminating doc drift.</p></div><div class="m-sec"><h4>5. Multi-Agent Orchestration</h4><p><span style="color:var(--purple)">▸</span> Sub-agent results require independent parent verification — never trust self-reports; 9 roles support parallel execution and pipeline orchestration.</p></div>'}},
 {img:'项目/[01]/KK\'s PM Growth Lab.jpg',title:{zh:"KK's PM Growth Lab",en:"KK's PM Growth Lab"},desc:{zh:'一条通过Vibe Coding从0到1完成产品实践的路径——任务驱动型学习平台',en:'A path from 0 to 1 through Vibe Coding — task-driven PM learning platform.'},tags:['Product','PM','Figma','Vibe Coding'],nodes:['Research ▸ done','Design ▸ done','Figma ▸ live','Launch ▸ live'],modal:{zh:'<div class="m-sec"><h4>KKs PM Growth Lab</h4><ul><li>定位 0 经验转行者的三大学习痛点（知识碎片化、学完即忘、无成果沉淀）</li><li>设计任务驱动式学习闭环：输入→练习→输出→反馈</li><li>独立完成全流程：用户调研 → 需求分析 → 功能设计 → Figma 原型迭代 → PRD 撰写 → 平台上线</li></ul></div>',en:'<div class="m-sec"><h4>KKs PM Growth Lab</h4><ul><li>3 pain points: fragmented knowledge, learn-and-forget, no portfolio</li><li>Task-driven learning loop: input→practice→output→feedback</li><li>Full process: research→requirements→design→Figma→PRD→launch</li></ul></div>'}},
-{title:{zh:'求职助手',en:'Job Assistant'},desc:{zh:'AI 求职自动化：16 Skill · 三平台覆盖 · 扫描→投递→追踪→面试→Offer 全链路',en:'AI job hunting automation: 16 Skills · 3 platforms · scan→apply→track→interview→offer full pipeline'},tags:['Agent','SaaS','Automation','Product'],nodes:['Scanner ▸ active','Tracker ▸ active','Dashboard ▸ live','Interview ▸ ready'],modal:{zh:'<div class="m-sec"><h4>求职助手 — AI 全自动求职系统</h4><p>基于 Hermes Agent 引擎，16 个 Skill 模块协同，覆盖 BOSS直聘/猎聘/智联招聘三大平台。</p></div><div class="m-sec"><h4>核心能力</h4><ul><li>扫描引擎: 多关键词搜索 → 规则过滤 → LLM 语义匹配打分</li><li>自动投递: 个性化话术生成 + 账号权重保护（≤20条/h）</li><li>投递追踪: Excel 看板 + 条件格式 + 自动状态同步</li><li>面试备战: 公司深度研究 + JD拆解 + 交互Demo + 模拟面试</li><li>日报推送: Telegram 每日简报 + API 成本审计</li></ul></div><div class="m-sec"><h4>数据看板</h4><p>日均扫描 450+ 岗位 · 累计 148+ 独立岗位 · 57 次扫描记录 · Dashboard 5 个 Tab 实时监控</p></div>',en:'<div class="m-sec"><h4>Job Assistant — AI-Powered Job Hunting System</h4><p>Built on Hermes Agent engine, 16 Skill modules covering BOSS/Liepin/Zhilian platforms.</p></div><div class="m-sec"><h4>Core Capabilities</h4><ul><li>Scanning: Multi-keyword search → rule filter → LLM semantic scoring</li><li>Auto-apply: Personalized greeting + account protection (≤20/h)</li><li>Tracking: Excel dashboard with conditional formatting</li><li>Interview prep: Company research + JD breakdown + interactive demos</li><li>Daily report: Telegram push + API cost audit</li></ul></div><div class="m-sec"><h4>Live Stats</h4><p>450+ daily scans · 148+ unique jobs · 57 scan sessions · 5-tab Dashboard</p></div>'}}
+{title:{zh:'求职助手',en:'Job Assistant'},desc:{zh:'AI 驱动的求职自动化产品 · 即将上线',en:'AI-powered job hunting automation · Coming soon'},tags:['SaaS','Automation','Product'],nodes:['Backend ▸ building','Frontend ▸ pending','Launch ▸ Q3'],modal:{zh:'<div class="m-sec"><h4>Product Vision</h4><p>多平台 AI 求职助手 SaaS——自动扫描匹配、智能投递、追踪反馈，帮你从重复操作中解放出来。</p><p style="color:var(--amber);margin-top:1rem">▸ 研发中，即将开放内测</p></div>',en:'<div class="m-sec"><h4>Product Vision</h4><p>Multi-platform AI job assistant SaaS — auto scan and match, smart apply, tracking dashboard. Free yourself from repetitive operations.</p><p style="color:var(--amber);margin-top:1rem">▸ In development, beta coming soon</p></div>'}}
 ];
-
 var projTotal=projData.length;
-var demoLibrary=[
-{title:{zh:'金融IT运维 Agent <span style="font-size:0.6rem;color:var(--amber);font-family:var(--mono);font-weight:500">DEMO</span>',en:'FinTech Ops Agent <span style="font-size:0.6rem;color:var(--amber);font-family:var(--mono);font-weight:500">DEMO</span>'},desc:{zh:'银行数据中心 AI 自主运维：鲲鹏+GaussDB+OceanStor 五步闭环',en:'Bank DC AI ops: Kunpeng+GaussDB+OceanStor · 5-step loop'},tags:['AIOps','Huawei','ReAct','Agent'],link:'https://devinwoo-kk.github.io/ops-agent-demo/'},
-{title:{zh:'反洗钱 AML Agent <span style="font-size:0.6rem;color:var(--amber);font-family:var(--mono);font-weight:500">DEMO</span>',en:'AML Agent <span style="font-size:0.6rem;color:var(--amber);font-family:var(--mono);font-weight:500">DEMO</span>'},desc:{zh:'ReAct 推理 · 8工具并行调查 · 5大洗钱场景 · OFAC模糊匹配',en:'ReAct reasoning · 8 tools · 5 laundering scenarios'},tags:['AML','ReAct','GraphDB','FinTech'],link:'https://devinwoo-kk.github.io/ops-agent-demo/aml'}
-];
-
 
 function buildProjects(){
 var track=document.getElementById('projTrack');
@@ -425,12 +338,11 @@ track.innerHTML='<div class="proj-label">// Projects<span class="proj-demo">Demo
     rightContent='<div class="pc-visual"><div class="nodes">'+p.nodes.map(function(n,j){return '<div class="'+(j===0?'node-active':'node-dim')+'">'+n+'</div>'}).join('')+'</div></div>';
   }
   return '<div class="proj-card" onclick="openProject('+i+')" style="margin-right:'+(i<projTotal-1?'2vw':'10vw')+'"><div class="pc-left"><div class="pc-idx">['+String(i).padStart(2,'0')+']</div><h2>'+p.title[lang]+'</h2><p class="pc-desc">'+p.desc[lang]+'</p><div class="pc-tags">'+p.tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div></div><div class="pc-right" style="'+(p.img?'':'flex:1')+'">'+rightContent+'</div></div>'
-}).join('')+'<div class="proj-card proj-lib-btn" onclick="openDemoLibrary()" style="margin-right:10vw;cursor:pointer;flex:0 0 280px;max-width:280px;height:72vh;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(167,139,250,0.3);background:rgba(167,139,250,0.03)"><div style="text-align:center"><div style="font-size:2.5rem;margin-bottom:0.5rem">📦</div><div style="font-family:var(--mono);font-size:0.9rem;color:var(--purple);margin-bottom:0.3rem">Project<br>Library</div><div style="font-size:0.7rem;color:var(--text3)">'+demoLibrary.length+' items</div></div></div>';
+}).join('');
 initScrollTrigger();
 }
 
 function initScrollTrigger(){
-if(window.innerWidth<768)return;
 gsap.registerPlugin(ScrollTrigger);
 var track=document.getElementById('projTrack');
 var stage=document.querySelector('.proj-stage');
@@ -485,23 +397,21 @@ document.body.appendChild(overlay);
 
 var connectData=[
 {icon:'<svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.627-5.373-11.703-12-11.703"/></svg>',name:{zh:'GitHub',en:'GitHub'},handle:{zh:'@DevinWoo-KK',en:'@DevinWoo-KK'},url:'https://github.com/DevinWoo-KK'},
-{icon:'<img src="图标/小红书账号.svg" width="22" height="22" style="display:block" alt="">',name:{zh:'小红书',en:'RED'},handle:{zh:'@devin',en:'@devin'},url:'https://xhslink.com/m/38TvvVGDISk'},
+{icon:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="1" width="20" height="22" rx="3" fill="currentColor"/><text x="12" y="17" text-anchor="middle" fill="var(--carbon)" font-size="10" font-weight="bold" font-family="sans-serif">红</text></svg>',name:{zh:'小红书',en:'RED'},handle:{zh:'@devin',en:'@devin'},url:'https://xhslink.com/m/38TvvVGDISk'},
 {icon:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="1" y="3" width="22" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1 5l11 8 11-8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',name:{zh:'邮箱',en:'Email'},handle:{zh:'Dongwei.Woo@outlook.com',en:'Dongwei.Woo@outlook.com'},url:'mailto:Dongwei.Woo@outlook.com'},
-{icon:'<img src="图标/微信.svg" width="22" height="22" style="display:block" alt="">',name:{zh:'微信',en:'WeChat'},handle:{zh:'扫码添加',en:'Scan QR'},qr:true},
+{icon:'<svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M9 5c-2.8 0-5 1.8-5 4 0 1.4.8 2.7 2.2 3.5l-.5 1.3 1.5-.8c.6.2 1.2.3 1.8.3.5 0 1-.1 1.5-.2-.5-1.3.2-2.7 1.5-3.5 1.2-.7 2.7-.7 3.8 0 .3-1.6-1.5-3-4-3.6-.8-.2-1.7-.3-2.8 0zM7.7 9.2c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7zm3.4 0c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7zM18 12c-2 0-3.7 1.3-3.7 3s1.7 3 3.7 3c.4 0 .9-.1 1.3-.2l1.1.6-.4-1c1-.6 1.7-1.5 1.7-2.4 0-1.7-1.7-3-3.7-3zm-1.3 2c.3 0 .5.2.5.5s-.2.5-.5.5-.5-.2-.5-.5.2-.5.5-.5zm2.6 0c.3 0 .5.2.5.5s-.2.5-.5.5-.5-.2-.5-.5.2-.5.5-.5z"/></svg>',name:{zh:'微信',en:'WeChat'},handle:{zh:'扫码添加',en:'Scan QR'},qr:true},
 {icon:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="3" fill="currentColor"/><text x="7" y="18" fill="var(--abyss)" font-size="14" font-weight="bold" font-family="sans-serif">in</text></svg>',name:{zh:'LinkedIn',en:'LinkedIn'},handle:{zh:'/in/devin',en:'/in/devin'},url:'#'},
-{icon:'<svg width="22" height="22" viewBox="0 0 1024 1024"><path d="M921.84736468 997.93033544H101.54506534c-24.68943392 0-44.71162586-20.00838352-44.71162584-44.71162585V631.455181c0-24.70324234 20.02219194-44.71162586 44.71162584-44.71162585s44.71162586 20.00838352 44.71162586 44.71162585v277.05190275h730.87904765V631.455181c0-24.70324234 20.02219194-44.71162586 44.71162583-44.71162585 24.68943392 0 44.71162586 20.00838352 44.71162586 44.71162585V953.21870959c0 24.70324234-20.02219194 44.71162586-44.71162586 44.71162585z" fill="currentColor"/><path d="M511.69621502 839.9897621c-24.68943392 0-44.71162586-20.00838352-44.71162585-44.71162585V70.54383027c0-24.70324234 20.02219194-44.71162586 44.71162585-44.71162586s44.71162586 20.00838352 44.71162585 44.71162586v724.73430598c0 24.70324234-20.02219194 44.71162586-44.71162585 44.71162585z" fill="currentColor"/><path d="M511.69621502 869.73307344c-14.37455297 0-27.92060144-6.93182094-36.30230524-18.61373431L323.62569491 639.87831001c-14.41597819-20.04980875-9.84539506-47.998027 10.21822209-62.41400518 20.02219194-14.37455297 47.94279339-9.85920347 62.3863884 10.21822208l115.47971803 160.70225499 115.45210121-160.68844659c14.443595-20.09123397 42.37800485-24.60658347 62.38638839-10.23203048 20.04980875 14.41597819 24.62039188 42.33657964 10.21822208 62.40019679l-151.75440644 211.2272207a44.65639221 44.65639221 0 0 1-36.31611365 18.64135112z" fill="currentColor"/></svg>',name:{zh:'简历',en:'Resume'},handle:{zh:'下载 PDF',en:'Download PDF'},url:'简历/吴东蔚_AI产品经理AI Agent.pdf',clr:'var(--amber)'}
+{icon:'⬇',name:{zh:'简历',en:'Resume'},handle:{zh:'下载 PDF',en:'Download PDF'},url:'简历/吴东蔚_AI产品经理AI Agent.pdf',clr:'var(--amber)'}
 ];
 function buildConnect(){document.getElementById('connectRow').innerHTML=connectData.map(function(c){var s=c.clr?' style="color:'+c.clr+';border-color:'+c.clr+'"':'';if(c.qr)return'<a href="#" class="connect-item"'+s+' onclick="openQR();return false"><div class="ci-icon">'+c.icon+'</div><div class="ci-name">'+c.name[lang]+'</div><div class="ci-handle">'+c.handle[lang]+'</div></a>';return'<a href="'+c.url+'" class="connect-item"'+s+' target="_blank"><div class="ci-icon" style="display:flex;align-items:center;justify-content:center">'+c.icon+'</div><div class="ci-name">'+c.name[lang]+'</div><div class="ci-handle">'+c.handle[lang]+'</div></a>'}).join('')}
 
 function openProject(i){if(i===0){window.open('https://lace-brave-26334835.figma.site','_blank')}else if(i===1){window.open('https://epic-straw-91960890.figma.site','_blank')}else{openProjModal(i)}}
 function openTLModal(idx){var item=tlData[idx];document.getElementById('modalBody').innerHTML='<h2>'+item.title[lang]+'</h2><div class="m-sub">'+item.sub[lang]+' · '+item.date+'</div>'+item.modal[lang];document.getElementById('modalOverlay').classList.add('active')}
 function openProjModal(i){var p=projData[i];var m=document.querySelector('.modal');if(i===0){m.classList.add('ide');document.getElementById('modalBody').innerHTML='<div class="ide-topbar"><div class="tab left" style="background:#1e1c1a;color:var(--text)"><span class="dot" style="background:var(--green)"></span> ARCHITECTURE</div><div class="tab right"><span class="dot" style="background:var(--text3)"></span> DESIGN_BIBLE.md</div></div><div class="m-sec-layout"><div class="ide-left"> <div class="arch-graph"> <div class="arch-flow-label">DATA FLOW</div> <div class="arch-node"> <div class="arch-node-icon">◆</div> <div class="arch-node-body"> <div class="arch-node-name">Multi-Modal Perception</div> <div class="arch-node-sub">WeChat · Telegram · CLI · Cron / Webhook</div> <div class="arch-node-hl">统一四通道入口，四眼调度器预判复杂度，免费预加载优先</div> </div> <div class="arch-node-status on"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◇</div> <div class="arch-node-body"> <div class="arch-node-name">Brain · Intelligent Router</div> <div class="arch-node-sub">L0 Preprocess → L0.5 Cache → L1 Heuristic → L2 Planner → Exec → Fallback</div> <div class="arch-node-hl">前三层 &lt;5ms 零 API 成本覆盖 60%+ 消息。Session Affinity 锁定最优模型，Prompt Caching 识别 120× 价差，年 API 降 ~90%</div> </div> <div class="arch-node-status on"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◆</div> <div class="arch-node-body"> <div class="arch-node-name">Memory System</div> <div class="arch-node-sub">Built-in Memory · Hindsight KG · Session Search RAG</div> <div class="arch-node-hl">双层架构：内置记忆 4K session 冻结快照 + Hindsight 知识图谱动态检索。FTS5 → Query Rewrite → Rerank，跨会话召回命中率 83%</div> </div> <div class="arch-node-status on"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◇</div> <div class="arch-node-body"> <div class="arch-node-name">Persona Engine</div> <div class="arch-node-sub">SOUL.md v4.1 · WORK/LIFE 双模 · ModeDetector</div> <div class="arch-node-hl">同一人格基线两种关系距离。独立门控检测器，自动化场景强制锁不可绕过。11 反模式知识库防止系统级陷阱复现</div> </div> <div class="arch-node-status core"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◆</div> <div class="arch-node-body"> <div class="arch-node-name">Agent Orchestration</div> <div class="arch-node-sub">9 Roles · delegate_task · SDD / Kanban</div> <div class="arch-node-hl">四层编排引擎：身份→路由→并行→合成。子Agent 上下文隔离，父Agent 独立验证结果，不信任自报</div> </div> <div class="arch-node-status sb"></div> </div> <div class="arch-connector"> <div class="arch-line"></div> <div class="arch-arrow-head"></div> </div> <div class="arch-node"> <div class="arch-node-icon">◇</div> <div class="arch-node-body"> <div class="arch-node-name">Self-Healing & Reliability</div> <div class="arch-node-sub">3-Tier Diagnosis · Circuit Breaker · 4-Layer Archive</div> <div class="arch-node-hl">API Key 四重冗余自动恢复。模型/供应商两级熔断器，状态持久化。15 步全链路每层独立 fail-safe</div> </div> <div class="arch-node-status sb"></div> </div> <div class="arch-flow-end">▾ OUTPUT</div> </div> </div><div class="ide-right"> <div class="doc-header"> <div class="doc-fname">DESIGN_BIBLE.md</div> <div class="doc-meta">v3.3 · 16 Chapters · 未央 (Audra) + Devin</div> </div> <div class="doc-section"> <div class="doc-h2">设计哲学</div> <div class="doc-p">稳定性 &gt; 成本 &gt; 性能 &gt; 延迟。分层迭代，每层独立 fail-safe。过早复杂是不稳定的根源。架构层归位：人格→SOUL.md，偏好→Memory，流程→Skill。</div> </div> <div class="doc-section"> <div class="doc-h2">模型矩阵</div> <div class="doc-grid"> <div class="doc-card"> <div class="doc-card-label">主力</div> <div class="doc-card-val">DeepSeek v4 Pro</div> <div class="doc-card-meta">1M ctx · ¥12/24 per M</div> </div> <div class="doc-card"> <div class="doc-card-label">低成本</div> <div class="doc-card-val">DeepSeek Flash</div> <div class="doc-card-meta">¥1/2 per M</div> </div> <div class="doc-card"> <div class="doc-card-label">视觉</div> <div class="doc-card-val">Qwen3-VL-Plus</div> <div class="doc-card-meta">DashScope</div> </div> <div class="doc-card"> <div class="doc-card-label">编码</div> <div class="doc-card-val">Kimi-for-Coding</div> <div class="doc-card-meta">standby</div> </div> </div> </div> <div class="doc-section"> <div class="doc-h2">Brain 智能路由</div> <div class="doc-h3">六层管线</div> <div class="doc-flow"> <span class="df-node">L0<br><small>预处理</small></span> <span class="df-arr">→</span> <span class="df-node">L0.5<br><small>指纹缓存</small></span> <span class="df-arr">→</span> <span class="df-node">L1<br><small>启发式</small></span> <span class="df-arr">→</span> <span class="df-node">L2<br><small>Planner</small></span> <span class="df-arr">→</span> <span class="df-node">Exec<br><small>解析</small></span> <span class="df-arr">→</span> <span class="df-node">FB<br><small>熔断</small></span> </div> <div class="doc-p">前三层基于启发式规则，&lt;5ms + 零 API 成本覆盖 60%+ 消息。L2 Planner 用 Flash 模型分类 simple / complex（conf &lt; 0.60 → 强制 complex）。Session Affinity（STICKY）锁定最优模型减少切换成本。Vision Re-Route：图像检测→VL 模型提取描述→重新走完整 Brain pipeline。</div> <div class="doc-h3">5 Providers · 8 Auxiliary · 8-Layer Global Fallback</div> <div class="doc-p">openai-compatible（★主力）· dashscope · kimi-coding · glm · gemini（视觉兜底）。8 个辅助模块分流独立模型。模型级熔断 3 次失败→open 60s，提供商级 5 次→open 120s，状态持久化到 circuit_breakers.json。</div> </div> <div class="doc-section"> <div class="doc-h2">双模人格系统</div> <div class="doc-p">SOUL.md v4.1 定义不变核心（工程判断 / 质量门控 / 成本意识，永远激活）+ WORK / LIFE 两种关系距离。ModeDetector 作为 Brain pre-L1 拦截器：自动化场景（cron / subagent）强制 WORK 不可绕过。"Audra" 命令切换 LIFE，"说正事" / "未央" 切回 WORK。LIFE→WORK 支持自动感知（技术关键词 / 任务指令 / 系统名词，单一信号 ≥ 0.75 即触发）。LIFE 模式对话隔离：不写入 MEMORY.md 或 Hindsight，仅存 session transcript。</div> </div> <div class="doc-section"> <div class="doc-h2">记忆与知识管理</div> <div class="doc-p">双层记忆架构：L1 内置记忆（MEMORY.md 4K + USER.md 2.5K，session 启动冻结快照保护 Prompt Cache，10 种威胁扫描 + StreamingContextScrubber）；L2 Hindsight 知识图谱（外部动态检索，3s 熔断超时）。Session Search：SQLite FTS5 全文索引 → Query Rewrite（Flash 模型）→ Rerank 语义排序 → LLM 摘要，跨会话召回命中率 83%。持久化知识沉淀链路：LLM-Wiki 可查询互联知识库 + Obsidian 本地笔记 + NotebookLM 深度分析。</div> </div> <div class="doc-section"> <div class="doc-h2">编排与稳定性</div> <div class="doc-h3">子Agent 编排</div> <div class="doc-p">四层引擎：身份模型→路由决策→并行执行→结果合成。9 个角色（软件架构师 / 高级 PM / 智能体编排者 / UX 架构师 / 招聘专家 / 产品经理 / 学习规划师 / 测试分析师 / 高管摘要师），delegate_task 并行派发（max 3），SDD / Kanban 结构化开发流。子Agent 上下文隔离，父Agent 独立验证不信任自报。</div> <div class="doc-h3">自愈基础设施</div> <div class="doc-p">三层诊断自愈：L1 网关健康检查（cron / 10min）→ L2 配置守护（自动检测 + 逐级恢复）→ L3 四眼调度器（零成本规则优先）。API Key 四重冗余（config / auth / systemd / bashrc）自动检测恢复。四层数据保护：秒级即时回滚→手动快照→Git 版本控制→每日全量快照。15 步端到端调用链路每层独立 fail-safe。</div></div></div></div>'}else{m.classList.remove('ide');document.getElementById('modalBody').innerHTML='<h2>'+p.title[lang]+'</h2><div class="m-sub">Case Study ['+String(i).padStart(2,'0')+']</div>'+p.modal[lang]}document.getElementById('modalOverlay').classList.add('active')}
-function openDemoLibrary(){var grid=document.getElementById('libGrid');grid.innerHTML=demoLibrary.map(function(d,i){return '<div class="lib-card" onclick="window.open(\''+d.link+'\',\'_blank\')"><div class="lib-title">'+d.title[lang]+'</div><div class="lib-desc">'+d.desc[lang]+'</div><div class="lib-tags">'+d.tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div><a class="lib-link" href="'+d.link+'" target="_blank" onclick="event.stopPropagation()">\u2192 Live Demo</a></div>'}).join('');document.getElementById('libOverlay').classList.add('active')}
-function closeDemoLibrary(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('libOverlay').classList.remove('active')}
 function closeModal(e){if(e&&e.target!==e.currentTarget)return;document.querySelector('.modal').classList.remove('ide');document.getElementById('modalOverlay').classList.remove('active')}
 function openQR(){document.getElementById('qrOverlay').classList.add('active')}
 function closeQR(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('qrOverlay').classList.remove('active')}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closeQR();closeDemoLibrary()}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closeQR()}});
 
 var navLinks=document.querySelectorAll('.nav-links a');
 var sectionIds=['hero','about','journey','projects','skills','connect'];
@@ -514,11 +424,8 @@ var observer=new IntersectionObserver(function(entries){
   if(best){var id=best.id;navLinks.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+id)})}
 },{threshold:[0,0.2,0.4,0.6,0.8,1],rootMargin:'-56px 0px 0px 0px'});
 sectionEls.forEach(function(s){observer.observe(s)});
-window.addEventListener('scroll',function(){closeMobileMenu()},{passive:true});
 
 
-function toggleMobileMenu(){var m=document.getElementById('mobileMenu'),h=document.getElementById('hamburgerBtn');m.classList.toggle('active');h.classList.toggle('active')}
-function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('active');document.getElementById('hamburgerBtn').classList.remove('active')}
 renderAll();buildSkills();
 </script>
 
@@ -565,11 +472,11 @@ if (container) {
     antialias: true, alpha: true, powerPreference: 'high-performance'
   });
   renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
   container.appendChild(renderer.domElement);
 
-  const COUNT = window.innerWidth < 768 ? 30000 : 100000;
+  const COUNT = 100000;
   const geo = new THREE.BufferGeometry();
   const pos = new Float32Array(COUNT * 3);
   const tgtPos = new Float32Array(COUNT * 3);
